@@ -113,3 +113,65 @@ func TestGRPCUpdateUser(t *testing.T) {
 
 	t.Logf("updated user with ID %s", response.GetUser().GetId())
 }
+
+func TestGRPCGetUserMe(t *testing.T) {
+	userRequest := &v1.CreateUserRequest{
+		Email:      gofakeit.Email(),
+		Password:   gofakeit.Password(true, true, true, true, false, 12),
+		LastName:   gofakeit.LastName(),
+		FirstName:  gofakeit.FirstName(),
+		MiddleName: gofakeit.FirstName(),
+	}
+
+	connection, err := grpc.NewClient(
+		"localhost:9000",
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	require.NoError(t, err)
+	defer connection.Close()
+
+	usersClient := v1.NewUsersServiceClient(connection)
+	authenticationClient := v1.NewAuthenticationServiceClient(connection)
+
+	createdUser, err := usersClient.CreateUser(context.Background(), userRequest)
+
+	require.NoError(t, err)
+	require.NotNil(t, createdUser)
+	require.NotNil(t, createdUser.GetUser())
+	require.NotEmpty(t, createdUser.GetUser().GetId())
+
+	loginRequest := &v1.LoginRequest{
+		Email:    userRequest.GetEmail(),
+		Password: userRequest.GetPassword(),
+	}
+
+	loginResponse, err := authenticationClient.Login(context.Background(), loginRequest)
+
+	require.NoError(t, err)
+	require.NotNil(t, loginResponse)
+	require.NotNil(t, loginResponse.GetToken())
+	require.NotEmpty(t, loginResponse.GetToken().GetAccessToken())
+
+	request := &v1.Empty{}
+
+	authorizationMetadata := metadata.Pairs(
+		"authorization",
+		"Bearer "+loginResponse.GetToken().GetAccessToken(),
+	)
+
+	contextWithToken := metadata.NewOutgoingContext(context.Background(), authorizationMetadata)
+
+	response, err := usersClient.GetMe(contextWithToken, request)
+
+	require.NoError(t, err)
+	require.NotNil(t, response)
+	require.NotNil(t, response.GetUser())
+
+	assert.Equal(t, createdUser.GetUser().GetId(), response.GetUser().GetId())
+	assert.Equal(t, userRequest.GetEmail(), response.GetUser().GetEmail())
+	assert.Equal(t, userRequest.GetLastName(), response.GetUser().GetLastName())
+	assert.Equal(t, userRequest.GetFirstName(), response.GetUser().GetFirstName())
+	assert.Equal(t, userRequest.GetMiddleName(), response.GetUser().GetMiddleName())
+
+	t.Logf("received user with ID %s", response.GetUser().GetId())
+}
