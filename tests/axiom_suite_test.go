@@ -24,5 +24,16 @@ func TestAxiomSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(usersRunner),
 	)
 
+	testSuite.Test(
+		"course can be created",
+		(*AxiomSuite).TestCourseCanBeCreated,
+		axiom.WithSuiteTestRunner(coursesRunner),
+	)
+	testSuite.Test(
+		"course can be published",
+		(*AxiomSuite).TestCourseCanBePublished,
+		axiom.WithSuiteTestRunner(coursesRunner),
+	)
+
 	testSuite.Run()
 }

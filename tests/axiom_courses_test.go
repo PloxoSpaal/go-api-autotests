@@ -1,8 +1,6 @@
 package tests
 
 import (
-	"testing"
-
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +18,7 @@ var coursesRunner = testRunner.Join(
 	),
 )
 
-func TestAxiomCreateCourse(t *testing.T) {
+func (s *AxiomSuite) TestCourseCanBeCreated() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("course can be created"),
 		axiom.WithCaseMeta(
@@ -28,7 +26,7 @@ func TestAxiomCreateCourse(t *testing.T) {
 		),
 	)
 
-	coursesRunner.RunCase(t, testCase, func(cfg *axiom.Config) {
+	s.RunCase(testCase, func(cfg *axiom.Config) {
 		course := axiomCourse{
 			Title:     "Go API Autotests",
 			Published: false,
@@ -44,7 +42,7 @@ func TestAxiomCreateCourse(t *testing.T) {
 	})
 }
 
-func TestAxiomPublishCourse(t *testing.T) {
+func (s *AxiomSuite) TestCourseCanBePublished() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("course can be published"),
 		axiom.WithCaseMeta(
@@ -52,7 +50,7 @@ func TestAxiomPublishCourse(t *testing.T) {
 		),
 	)
 
-	coursesRunner.RunCase(t, testCase, func(cfg *axiom.Config) {
+	s.RunCase(testCase, func(cfg *axiom.Config) {
 		course := axiomCourse{
 			Title:     "Go API Autotests",
 			Published: false,
