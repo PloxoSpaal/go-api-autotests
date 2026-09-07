@@ -1,8 +1,6 @@
 package tests
 
 import (
-	"testing"
-
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +18,7 @@ var usersRunner = testRunner.Join(
 	),
 )
 
-func TestAxiomCreateUser(t *testing.T) {
+func (s *AxiomSuite) TestUserCanBeCreated() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("user can be created"),
 		axiom.WithCaseMeta(
@@ -28,7 +26,7 @@ func TestAxiomCreateUser(t *testing.T) {
 		),
 	)
 
-	usersRunner.RunCase(t, testCase, func(cfg *axiom.Config) {
+	s.RunCase(testCase, func(cfg *axiom.Config) {
 		user := axiomUser{
 			Email:  "student@example.com",
 			Active: true,
@@ -44,7 +42,7 @@ func TestAxiomCreateUser(t *testing.T) {
 	})
 }
 
-func TestAxiomDeactivateUser(t *testing.T) {
+func (s *AxiomSuite) TestUserCanBeDeactivated() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("user can be deactivated"),
 		axiom.WithCaseMeta(
@@ -52,7 +50,7 @@ func TestAxiomDeactivateUser(t *testing.T) {
 		),
 	)
 
-	usersRunner.RunCase(t, testCase, func(cfg *axiom.Config) {
+	s.RunCase(testCase, func(cfg *axiom.Config) {
 		user := axiomUser{
 			Email:  "student@example.com",
 			Active: true,
