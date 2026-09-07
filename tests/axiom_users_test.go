@@ -36,31 +36,51 @@ func (s *AxiomSuite) TestUserCanBeCreated() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		assert.Equal(cfg.T(), "Learning platform", cfg.Meta.Epic)
-		assert.Equal(cfg.T(), "Users", cfg.Meta.Feature)
-		assert.Equal(cfg.T(), "Create user", cfg.Meta.Story)
-		assert.Equal(cfg.T(), axiom.SeverityCritical, cfg.Meta.Severity)
-		assert.Equal(
-			cfg.T(),
-			[]string{"axiom", "users", "create", "smoke"},
-			cfg.Meta.Tags,
+		var (
+			email string
+			user  axiomUser
 		)
-		assert.Equal(cfg.T(), []string{"AXIOM-101"}, cfg.Meta.Issues)
-		assert.Equal(cfg.T(), []string{"USERS-001"}, cfg.Meta.TestCases)
 
-		expectedLabels := map[string]string{
-			"owner":     "users-team",
-			"component": "users-service",
-		}
-		assert.Equal(cfg.T(), expectedLabels, cfg.Meta.Labels)
+		cfg.Setup("prepare user data", func() {
+			email = "student@example.com"
+		})
 
-		user := axiomUser{
-			Email:  "student@example.com",
-			Active: true,
-		}
+		defer cfg.Teardown("clear user data", func() {
+			email = ""
+			user = axiomUser{}
+		})
 
-		assert.Equal(cfg.T(), "student@example.com", user.Email)
-		assert.True(cfg.T(), user.Active)
+		cfg.Step("check test metadata", func() {
+			assert.Equal(cfg.T(), "Learning platform", cfg.Meta.Epic)
+			assert.Equal(cfg.T(), "Users", cfg.Meta.Feature)
+			assert.Equal(cfg.T(), "Create user", cfg.Meta.Story)
+			assert.Equal(cfg.T(), axiom.SeverityCritical, cfg.Meta.Severity)
+			assert.Equal(
+				cfg.T(),
+				[]string{"axiom", "users", "create", "smoke"},
+				cfg.Meta.Tags,
+			)
+			assert.Equal(cfg.T(), []string{"AXIOM-101"}, cfg.Meta.Issues)
+			assert.Equal(cfg.T(), []string{"USERS-001"}, cfg.Meta.TestCases)
+
+			expectedLabels := map[string]string{
+				"owner":     "users-team",
+				"component": "users-service",
+			}
+			assert.Equal(cfg.T(), expectedLabels, cfg.Meta.Labels)
+		})
+
+		cfg.Step("create user", func() {
+			user = axiomUser{
+				Email:  email,
+				Active: true,
+			}
+		})
+
+		cfg.Step("check created user", func() {
+			assert.Equal(cfg.T(), "student@example.com", user.Email)
+			assert.True(cfg.T(), user.Active)
+		})
 	})
 }
 
@@ -76,23 +96,37 @@ func (s *AxiomSuite) TestUserCanBeDeactivated() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		assert.Equal(cfg.T(), "Deactivate user", cfg.Meta.Story)
-		assert.Equal(cfg.T(), axiom.SeverityNormal, cfg.Meta.Severity)
-		assert.Equal(
-			cfg.T(),
-			[]string{"axiom", "users", "deactivate", "regression"},
-			cfg.Meta.Tags,
-		)
-		assert.Equal(cfg.T(), []string{"AXIOM-102"}, cfg.Meta.Issues)
-		assert.Equal(cfg.T(), []string{"USERS-002"}, cfg.Meta.TestCases)
+		var user axiomUser
 
-		user := axiomUser{
-			Email:  "student@example.com",
-			Active: true,
-		}
+		cfg.Setup("prepare active user", func() {
+			user = axiomUser{
+				Email:  "student@example.com",
+				Active: true,
+			}
+		})
 
-		user.Active = false
+		defer cfg.Teardown("clear user data", func() {
+			user = axiomUser{}
+		})
 
-		assert.False(cfg.T(), user.Active)
+		cfg.Step("check test metadata", func() {
+			assert.Equal(cfg.T(), "Deactivate user", cfg.Meta.Story)
+			assert.Equal(cfg.T(), axiom.SeverityNormal, cfg.Meta.Severity)
+			assert.Equal(
+				cfg.T(),
+				[]string{"axiom", "users", "deactivate", "regression"},
+				cfg.Meta.Tags,
+			)
+			assert.Equal(cfg.T(), []string{"AXIOM-102"}, cfg.Meta.Issues)
+			assert.Equal(cfg.T(), []string{"USERS-002"}, cfg.Meta.TestCases)
+		})
+
+		cfg.Step("deactivate user", func() {
+			user.Active = false
+		})
+
+		cfg.Step("check deactivated user", func() {
+			assert.False(cfg.T(), user.Active)
+		})
 	})
 }
