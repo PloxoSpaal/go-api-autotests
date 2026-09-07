@@ -12,30 +12,47 @@ type axiomUser struct {
 	Active bool
 }
 
+var usersRunner = testRunner.Join(
+	axiom.NewRunner(
+		axiom.WithRunnerMeta(
+			axiom.WithMetaTag("users"),
+		),
+	),
+)
+
 func TestAxiomCreateUser(t *testing.T) {
-	testRunner := axiom.NewRunner()
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("user can be created"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag("create"),
+		),
 	)
 
-	testRunner.RunCase(t, testCase, func(cfg *axiom.Config) {
+	usersRunner.RunCase(t, testCase, func(cfg *axiom.Config) {
 		user := axiomUser{
 			Email:  "student@example.com",
 			Active: true,
 		}
 
+		assert.Equal(
+			cfg.T(),
+			[]string{"axiom", "users", "create"},
+			cfg.Meta.Tags,
+		)
 		assert.Equal(cfg.T(), "student@example.com", user.Email)
 		assert.True(cfg.T(), user.Active)
 	})
 }
 
 func TestAxiomDeactivateUser(t *testing.T) {
-	testRunner := axiom.NewRunner()
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("user can be deactivated"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag("deactivate"),
+		),
 	)
 
-	testRunner.RunCase(t, testCase, func(cfg *axiom.Config) {
+	usersRunner.RunCase(t, testCase, func(cfg *axiom.Config) {
 		user := axiomUser{
 			Email:  "student@example.com",
 			Active: true,
@@ -43,6 +60,11 @@ func TestAxiomDeactivateUser(t *testing.T) {
 
 		user.Active = false
 
+		assert.Equal(
+			cfg.T(),
+			[]string{"axiom", "users", "deactivate"},
+			cfg.Meta.Tags,
+		)
 		assert.False(cfg.T(), user.Active)
 	})
 }
