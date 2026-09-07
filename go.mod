@@ -4,6 +4,7 @@ go 1.26.6
 
 require (
 	github.com/Nikita-Filonov/api-go-autotests-server v1.1.0
+	github.com/Nikita-Filonov/axiom v1.7.0
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/go-resty/resty/v2 v2.17.0
 	github.com/stretchr/testify v1.11.1
