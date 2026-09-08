@@ -20,6 +20,11 @@ var usersRunner = testRunner.Join(
 			axiom.WithMetaLabel("owner", "users-team"),
 			axiom.WithMetaLabel("component", "users-service"),
 		),
+		axiom.WithRunnerContext(
+			axiom.WithContextData(
+				"service", "users-service",
+			),
+		),
 	),
 )
 
@@ -32,6 +37,10 @@ func (s *AxiomSuite) TestUserCanBeCreated() {
 			axiom.WithMetaTags("create", "smoke"),
 			axiom.WithMetaIssue("AXIOM-101"),
 			axiom.WithMetaTestCase("USERS-001"),
+		),
+		axiom.WithCaseContext(
+			axiom.WithContextRaw(s.T().Context()),
+			axiom.WithContextData("operation", "create-user"),
 		),
 	)
 
@@ -48,6 +57,16 @@ func (s *AxiomSuite) TestUserCanBeCreated() {
 		defer cfg.Teardown("clear user data", func() {
 			email = ""
 			user = axiomUser{}
+		})
+
+		cfg.Step("check test context", func() {
+			environment := axiom.MustContextValue[string](&cfg.Context, "environment")
+			service := axiom.MustContextValue[string](&cfg.Context, "service")
+			operation := axiom.MustContextValue[string](&cfg.Context, "operation")
+
+			assert.Equal(cfg.T(), "local", environment)
+			assert.Equal(cfg.T(), "users-service", service)
+			assert.Equal(cfg.T(), "create-user", operation)
 		})
 
 		cfg.Step("check test metadata", func() {
@@ -93,6 +112,10 @@ func (s *AxiomSuite) TestUserCanBeDeactivated() {
 			axiom.WithMetaIssue("AXIOM-102"),
 			axiom.WithMetaTestCase("USERS-002"),
 		),
+		axiom.WithCaseContext(
+			axiom.WithContextRaw(s.T().Context()),
+			axiom.WithContextData("operation", "deactivate-user"),
+		),
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
@@ -107,6 +130,16 @@ func (s *AxiomSuite) TestUserCanBeDeactivated() {
 
 		defer cfg.Teardown("clear user data", func() {
 			user = axiomUser{}
+		})
+
+		cfg.Step("check test context", func() {
+			environment := axiom.MustContextValue[string](&cfg.Context, "environment")
+			service := axiom.MustContextValue[string](&cfg.Context, "service")
+			operation := axiom.MustContextValue[string](&cfg.Context, "operation")
+
+			assert.Equal(cfg.T(), "local", environment)
+			assert.Equal(cfg.T(), "users-service", service)
+			assert.Equal(cfg.T(), "deactivate-user", operation)
 		})
 
 		cfg.Step("check test metadata", func() {

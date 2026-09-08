@@ -12,4 +12,7 @@ var testRunner = axiom.NewRunner(
 		axiom.WithMetaTag("axiom"),
 		axiom.WithMetaLabel("owner", "qa-platform"),
 	),
+	axiom.WithRunnerContext(
+		axiom.WithContextData("environment", "local"),
+	),
 )
