@@ -16,6 +16,7 @@ var usersRunner = testRunner.Join(
 			axiom.WithMetaLabel("component", "users-service"),
 		),
 		axiom.WithRunnerContext(axiom.WithContextData("service", "users-service")),
+		axiom.WithRunnerHooks(axiom.WithBeforeTest(usersToolset.Bind)),
 		axiom.WithRunnerResource("user-client", userClientResource),
 		axiom.WithRunnerFixture("user-data", userDataFixture),
 		axiom.WithRunnerFixture("active-user", activeUserFixture),
@@ -38,9 +39,8 @@ func (s *AxiomSuite) TestUserCanBeCreated() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		client := axiom.MustResource[*axiomUserClient](cfg.Runner, "user-client")
-		data := axiom.GetFixture[axiomUserData](cfg, "user-data")
+	s.RunCase(testCase, usersToolset.Action(func(cfg *axiom.Config, tools *axiomUsersTools) {
+		data := tools.UserData()
 
 		var user *axiomUser
 
@@ -61,24 +61,20 @@ func (s *AxiomSuite) TestUserCanBeCreated() {
 		})
 
 		cfg.Step("check test context", func() {
-			environment := axiom.MustContextValue[string](&cfg.Context, "environment")
-			service := axiom.MustContextValue[string](&cfg.Context, "service")
-			operation := axiom.MustContextValue[string](&cfg.Context, "operation")
-
-			assert.Equal(cfg.T(), "local", environment)
-			assert.Equal(cfg.T(), "users-service", service)
-			assert.Equal(cfg.T(), "create-user", operation)
+			assert.Equal(cfg.T(), "local", tools.Environment)
+			assert.Equal(cfg.T(), "users-service", tools.Service)
+			assert.Equal(cfg.T(), "create-user", tools.Operation)
 		})
 
 		cfg.Step("create user", func() {
-			user = client.Create(data)
+			user = tools.Client.Create(data)
 		})
 
 		cfg.Step("check created user", func() {
 			assert.Equal(cfg.T(), "student@example.com", user.Email)
 			assert.True(cfg.T(), user.Active)
 		})
-	})
+	}))
 }
 
 func (s *AxiomSuite) TestUserCanBeDeactivated() {
@@ -96,9 +92,8 @@ func (s *AxiomSuite) TestUserCanBeDeactivated() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		client := axiom.MustResource[*axiomUserClient](cfg.Runner, "user-client")
-		user := axiom.GetFixture[*axiomUser](cfg, "active-user")
+	s.RunCase(testCase, usersToolset.Action(func(cfg *axiom.Config, tools *axiomUsersTools) {
+		user := tools.ActiveUser()
 
 		cfg.Step("check test metadata", func() {
 			assert.Equal(cfg.T(), "Deactivate user", cfg.Meta.Story)
@@ -109,21 +104,17 @@ func (s *AxiomSuite) TestUserCanBeDeactivated() {
 		})
 
 		cfg.Step("check test context", func() {
-			environment := axiom.MustContextValue[string](&cfg.Context, "environment")
-			service := axiom.MustContextValue[string](&cfg.Context, "service")
-			operation := axiom.MustContextValue[string](&cfg.Context, "operation")
-
-			assert.Equal(cfg.T(), "local", environment)
-			assert.Equal(cfg.T(), "users-service", service)
-			assert.Equal(cfg.T(), "deactivate-user", operation)
+			assert.Equal(cfg.T(), "local", tools.Environment)
+			assert.Equal(cfg.T(), "users-service", tools.Service)
+			assert.Equal(cfg.T(), "deactivate-user", tools.Operation)
 		})
 
 		cfg.Step("deactivate user", func() {
-			client.Deactivate(user)
+			tools.Client.Deactivate(user)
 		})
 
 		cfg.Step("check deactivated user", func() {
 			assert.False(cfg.T(), user.Active)
 		})
-	})
+	}))
 }
