@@ -7,9 +7,9 @@ import (
 )
 
 func TestAxiomSuite(t *testing.T) {
-	testSuite := axiom.NewSuite(
+	testSuite := axiom.NewSuiteFactory(
 		t,
-		new(AxiomSuite),
+		func() *AxiomSuite { return new(AxiomSuite) },
 		axiom.WithSuiteConfigRunner(testRunner),
 	)
 

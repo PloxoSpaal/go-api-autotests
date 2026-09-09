@@ -1,6 +1,9 @@
 package tests
 
 import (
+	"os"
+	"time"
+
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,6 +19,11 @@ var usersRunner = testRunner.Join(
 			axiom.WithMetaLabel("component", "users-service"),
 		),
 		axiom.WithRunnerContext(axiom.WithContextData("service", "users-service")),
+		axiom.WithRunnerRetry(axiom.WithRetryTimes(3), axiom.WithRetryDelay(200*time.Millisecond)),
+		axiom.WithRunnerSkip(
+			axiom.WithSkipEnabled(os.Getenv("SKIP_USERS_TESTS") == "true"),
+			axiom.WithSkipReason("user tests are disabled by SKIP_USERS_TESTS"),
+		),
 		axiom.WithRunnerHooks(axiom.WithBeforeTest(usersToolset.Bind)),
 		axiom.WithRunnerResource("user-client", userClientResource),
 		axiom.WithRunnerFixture("user-data", userDataFixture),
@@ -37,6 +45,7 @@ func (s *AxiomSuite) TestUserCanBeCreated() {
 			axiom.WithContextRaw(s.T().Context()),
 			axiom.WithContextData("operation", "create-user"),
 		),
+		axiom.WithCaseParallel(axiom.WithParallelEnabled()),
 	)
 
 	s.RunCase(testCase, usersToolset.Action(func(cfg *axiom.Config, tools *axiomUsersTools) {
