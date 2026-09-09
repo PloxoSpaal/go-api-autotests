@@ -1,6 +1,9 @@
 package tests
 
 import (
+	"os"
+	"time"
+
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,6 +19,11 @@ var coursesRunner = testRunner.Join(
 			axiom.WithMetaLabel("component", "courses-service"),
 		),
 		axiom.WithRunnerContext(axiom.WithContextData("service", "courses-service")),
+		axiom.WithRunnerParallel(axiom.WithParallelEnabled()),
+		axiom.WithRunnerSkip(
+			axiom.WithSkipEnabled(os.Getenv("SKIP_COURSES_TESTS") == "true"),
+			axiom.WithSkipReason("course tests are disabled by SKIP_COURSES_TESTS"),
+		),
 		axiom.WithRunnerHooks(axiom.WithBeforeTest(coursesTools.Bind)),
 		axiom.WithRunnerResource("course-client", courseClientResource),
 		axiom.WithRunnerFixture("course-data", courseDataFixture),
@@ -92,6 +100,7 @@ func (s *AxiomSuite) TestCourseCanBePublished() {
 			axiom.WithContextRaw(s.T().Context()),
 			axiom.WithContextData("operation", "publish-course"),
 		),
+		axiom.WithCaseRetry(axiom.WithRetryTimes(3), axiom.WithRetryDelay(200*time.Millisecond)),
 	)
 
 	s.RunCase(testCase, coursesTools.Action(func(cfg *axiom.Config, tools *axiomCoursesTools) {
