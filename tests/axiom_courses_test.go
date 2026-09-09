@@ -5,11 +5,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type axiomCourse struct {
-	Title     string
-	Published bool
-}
-
 var coursesRunner = testRunner.Join(
 	axiom.NewRunner(
 		axiom.WithRunnerMeta(
@@ -20,11 +15,10 @@ var coursesRunner = testRunner.Join(
 			axiom.WithMetaLabel("owner", "courses-team"),
 			axiom.WithMetaLabel("component", "courses-service"),
 		),
-		axiom.WithRunnerContext(
-			axiom.WithContextData(
-				"service", "courses-service",
-			),
-		),
+		axiom.WithRunnerContext(axiom.WithContextData("service", "courses-service")),
+		axiom.WithRunnerResource("course-client", courseClientResource),
+		axiom.WithRunnerFixture("course-data", courseDataFixture),
+		axiom.WithRunnerFixture("unpublished-course", unpublishedCourseFixture),
 	),
 )
 
@@ -45,19 +39,10 @@ func (s *AxiomSuite) TestCourseCanBeCreated() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		var (
-			name   string
-			course axiomCourse
-		)
+		client := axiom.MustResource[*axiomCourseClient](cfg.Runner, "course-client")
+		data := axiom.GetFixture[axiomCourseData](cfg, "course-data")
 
-		cfg.Setup("prepare course data", func() {
-			name = "Go API Autotests"
-		})
-
-		defer cfg.Teardown("clear course data", func() {
-			name = ""
-			course = axiomCourse{}
-		})
+		var course *axiomCourse
 
 		cfg.Step("check test context", func() {
 			environment := axiom.MustContextValue[string](&cfg.Context, "environment")
@@ -88,10 +73,7 @@ func (s *AxiomSuite) TestCourseCanBeCreated() {
 		})
 
 		cfg.Step("create course", func() {
-			course = axiomCourse{
-				Title:     name,
-				Published: false,
-			}
+			course = client.Create(data)
 		})
 
 		cfg.Step("check created course", func() {
@@ -117,18 +99,8 @@ func (s *AxiomSuite) TestCourseCanBePublished() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		var course axiomCourse
-
-		cfg.Setup("prepare unpublished course", func() {
-			course = axiomCourse{
-				Title:     "Go API Autotests",
-				Published: false,
-			}
-		})
-
-		defer cfg.Teardown("clear course data", func() {
-			course = axiomCourse{}
-		})
+		client := axiom.MustResource[*axiomCourseClient](cfg.Runner, "course-client")
+		course := axiom.GetFixture[*axiomCourse](cfg, "unpublished-course")
 
 		cfg.Step("check test context", func() {
 			environment := axiom.MustContextValue[string](&cfg.Context, "environment")
@@ -153,7 +125,7 @@ func (s *AxiomSuite) TestCourseCanBePublished() {
 		})
 
 		cfg.Step("publish course", func() {
-			course.Published = true
+			client.Publish(course)
 		})
 
 		cfg.Step("check published course", func() {
