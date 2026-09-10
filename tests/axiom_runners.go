@@ -23,4 +23,5 @@ var testRunner = axiom.NewRunner(
 		axiom.WithBeforeStep(logBeforeStep),
 		axiom.WithAfterStep(logAfterStep),
 	),
+	axiom.WithRunnerPlugins(durationPlugin()),
 )
