@@ -28,6 +28,7 @@ var coursesRunner = testRunner.Join(
 		axiom.WithRunnerResource("course-client", courseClientResource),
 		axiom.WithRunnerFixture("course-data", courseDataFixture),
 		axiom.WithRunnerFixture("unpublished-course", unpublishedCourseFixture),
+		axiom.WithRunnerPlugins(stepCounterPlugin()),
 	),
 )
 
