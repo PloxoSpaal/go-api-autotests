@@ -34,6 +34,11 @@ func TestAxiomSuite(t *testing.T) {
 		(*AxiomSuite).TestCourseCanBePublished,
 		axiom.WithSuiteTestRunner(coursesRunner),
 	)
+	testSuite.Test(
+		"user can be created with different emails",
+		(*AxiomSuite).TestUserCanBeCreatedWithDifferentEmails,
+		axiom.WithSuiteTestRunner(usersRunner),
+	)
 
 	testSuite.Run()
 }
