@@ -1,9 +1,13 @@
-package tests
+package http
 
 import (
 	"net/http"
 	"testing"
 
+	"github.com/Nikita-Filonov/axiom"
+	"github.com/PloxoSpaal/go-api-autotests/builders"
+	"github.com/PloxoSpaal/go-api-autotests/fake"
+	"github.com/PloxoSpaal/go-api-autotests/models"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/go-resty/resty/v2"
 	"github.com/stretchr/testify/assert"
@@ -37,35 +41,37 @@ type updateUserRequest struct {
 	MiddleName string `json:"middleName"`
 }
 
-func TestHttpCreateUser(t *testing.T) {
-	request := createUserRequest{
-		Email:      gofakeit.Email(),
-		Password:   gofakeit.Password(true, true, true, true, false, 12),
-		LastName:   gofakeit.LastName(),
-		FirstName:  gofakeit.FirstName(),
-		MiddleName: gofakeit.MiddleName(),
-	}
+func (s *suite) TestCreateUser() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseName("create user"),
+	)
 
-	client := resty.New().SetBaseURL("http://localhost:8000/api/v1")
+	s.RunCase(testCase, func(cfg *axiom.Config) {
+		builder := builders.New(fake.New())
+		user := builder.UserCreate()
+		request := user.HTTPRequest()
 
-	var result userResponse
+		var result models.UserResponse
 
-	response, err := client.R().SetBody(request).SetResult(&result).Post("/users")
+		client := resty.New().SetBaseURL("http://localhost:8000/api/v1")
 
-	require.NoError(t, err)
-	require.NotNil(t, response)
-	require.Equal(t, http.StatusOK, response.StatusCode())
-	require.NotEmpty(t, result.User.Id)
+		response, err := client.R().SetBody(request).SetResult(&result).Post("/users")
 
-	assert.Equal(t, request.Email, result.User.Email)
-	assert.Equal(t, request.LastName, result.User.LastName)
-	assert.Equal(t, request.FirstName, result.User.FirstName)
-	assert.Equal(t, request.MiddleName, result.User.MiddleName)
+		require.NoError(cfg.T(), err)
+		require.NotNil(cfg.T(), response)
+		require.Equal(cfg.T(), http.StatusOK, response.StatusCode())
+		require.NotEmpty(cfg.T(), result.User.ID)
 
-	t.Logf("created user with ID %s", result.User.Id)
+		assert.Equal(cfg.T(), request.Email, result.User.Email)
+		assert.Equal(cfg.T(), request.LastName, result.User.LastName)
+		assert.Equal(cfg.T(), request.FirstName, result.User.FirstName)
+		assert.Equal(cfg.T(), request.MiddleName, result.User.MiddleName)
+
+		cfg.T().Logf("created user with ID %s", result.User.ID)
+	})
 }
 
-func TestHttpUpdateUser(t *testing.T) {
+func TestUpdateUser(t *testing.T) {
 	userRequest := createUserRequest{
 		Email:      gofakeit.Email(),
 		Password:   gofakeit.Password(true, true, true, true, false, 12),
@@ -146,7 +152,7 @@ func TestHttpUpdateUser(t *testing.T) {
 	t.Logf("updated user with ID %s", result.User.Id)
 }
 
-func TestHttpGetUser(t *testing.T) {
+func TestGetUser(t *testing.T) {
 	userRequest := createUserRequest{
 		Email:      gofakeit.Email(),
 		Password:   gofakeit.Password(true, true, true, true, false, 12),

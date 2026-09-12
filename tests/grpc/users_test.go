@@ -1,4 +1,4 @@
-package tests
+package grpc
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func TestGRPCCreateUser(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 	request := &v1.CreateUserRequest{
 		Email:      gofakeit.Email(),
 		Password:   gofakeit.Password(true, true, true, true, false, 12),
@@ -46,7 +46,7 @@ func TestGRPCCreateUser(t *testing.T) {
 	t.Logf("created user with ID %s", response.GetUser().GetId())
 }
 
-func TestGRPCUpdateUser(t *testing.T) {
+func TestUpdateUser(t *testing.T) {
 	userRequest := &v1.CreateUserRequest{
 		Email:      gofakeit.Email(),
 		Password:   gofakeit.Password(true, true, true, true, false, 12),
@@ -114,7 +114,7 @@ func TestGRPCUpdateUser(t *testing.T) {
 	t.Logf("updated user with ID %s", response.GetUser().GetId())
 }
 
-func TestGRPCGetUserMe(t *testing.T) {
+func TestGetUserMe(t *testing.T) {
 	userRequest := &v1.CreateUserRequest{
 		Email:      gofakeit.Email(),
 		Password:   gofakeit.Password(true, true, true, true, false, 12),
