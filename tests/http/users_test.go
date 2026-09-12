@@ -51,6 +51,10 @@ func (s *suite) TestCreateUser() {
 func (s *suite) TestUpdateUser() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("update user"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryUpdateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
@@ -128,6 +132,11 @@ func (s *suite) TestUpdateUser() {
 func (s *suite) TestGetUserMe() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("get user me"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
