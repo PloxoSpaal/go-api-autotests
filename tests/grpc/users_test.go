@@ -5,6 +5,9 @@ import (
 	"testing"
 
 	v1 "github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
+	"github.com/Nikita-Filonov/axiom"
+	"github.com/PloxoSpaal/go-api-autotests/builders"
+	"github.com/PloxoSpaal/go-api-autotests/fake"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -13,37 +16,38 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func TestCreateUser(t *testing.T) {
-	request := &v1.CreateUserRequest{
-		Email:      gofakeit.Email(),
-		Password:   gofakeit.Password(true, true, true, true, false, 12),
-		LastName:   gofakeit.LastName(),
-		FirstName:  gofakeit.FirstName(),
-		MiddleName: gofakeit.FirstName(),
-	}
-
-	connection, err := grpc.NewClient(
-		"localhost:9000",
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+func (s *suite) TestCreateUser() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseName("create user"),
 	)
-	require.NoError(t, err)
-	defer connection.Close()
 
-	usersClient := v1.NewUsersServiceClient(connection)
+	s.RunCase(testCase, func(cfg *axiom.Config) {
+		builder := builders.New(fake.New())
+		user := builder.UserCreate()
+		request := user.GRPCRequest()
 
-	response, err := usersClient.CreateUser(context.Background(), request)
+		connection, err := grpc.NewClient(
+			"localhost:9000",
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		require.NoError(cfg.T(), err)
+		defer connection.Close()
 
-	require.NoError(t, err)
-	require.NotNil(t, response)
-	require.NotNil(t, response.GetUser())
-	require.NotEmpty(t, response.GetUser().GetId())
+		client := v1.NewUsersServiceClient(connection)
+		response, err := client.CreateUser(context.Background(), request)
 
-	assert.Equal(t, request.GetEmail(), response.GetUser().GetEmail())
-	assert.Equal(t, request.GetLastName(), response.GetUser().GetLastName())
-	assert.Equal(t, request.GetFirstName(), response.GetUser().GetFirstName())
-	assert.Equal(t, request.GetMiddleName(), response.GetUser().GetMiddleName())
+		require.NoError(cfg.T(), err)
+		require.NotNil(cfg.T(), response)
+		require.NotNil(cfg.T(), response.GetUser())
+		require.NotEmpty(cfg.T(), response.GetUser().GetId())
 
-	t.Logf("created user with ID %s", response.GetUser().GetId())
+		assert.Equal(cfg.T(), request.GetEmail(), response.GetUser().GetEmail())
+		assert.Equal(cfg.T(), request.GetLastName(), response.GetUser().GetLastName())
+		assert.Equal(cfg.T(), request.GetFirstName(), response.GetUser().GetFirstName())
+		assert.Equal(cfg.T(), request.GetMiddleName(), response.GetUser().GetMiddleName())
+
+		cfg.T().Logf("created user with ID %s", response.GetUser().GetId())
+	})
 }
 
 func TestUpdateUser(t *testing.T) {
