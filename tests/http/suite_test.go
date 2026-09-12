@@ -21,5 +21,17 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(authenticationRunner),
 	)
 
+	testSuite.Test(
+		"TestUpdateUser",
+		(*suite).TestUpdateUser,
+		axiom.WithSuiteTestRunner(usersRunner),
+	)
+
+	testSuite.Test(
+		"TestGetUserMe",
+		(*suite).TestGetUserMe,
+		axiom.WithSuiteTestRunner(usersRunner),
+	)
+
 	testSuite.Run()
 }

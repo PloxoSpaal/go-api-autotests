@@ -12,21 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type loginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type token struct {
-	TokenType    string `json:"tokenType"`
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-}
-
-type loginResponse struct {
-	Token token `json:"token"`
-}
-
 func (s *suite) TestLoginUser() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("Login user"),
