@@ -7,6 +7,7 @@ import (
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/fake"
+	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -16,6 +17,11 @@ import (
 func (s *suite) TestLogin() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("login with correct email and password"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryLogin),
+			axiom.WithMetaSeverity(axiom.SeverityBlocker),
+		),
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {

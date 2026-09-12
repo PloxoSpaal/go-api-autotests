@@ -6,6 +6,7 @@ import (
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/fake"
+	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 	"github.com/go-resty/resty/v2"
 	"github.com/stretchr/testify/assert"
@@ -15,6 +16,11 @@ import (
 func (s *suite) TestCreateUser() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("create user"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryCreateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityBlocker),
+		),
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {

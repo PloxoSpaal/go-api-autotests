@@ -7,16 +7,22 @@ import (
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/fake"
+	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/metadata"
+	grpcmetadata "google.golang.org/grpc/metadata"
 )
 
 func (s *suite) TestCreateUser() {
 	testCase := axiom.NewCase(
 		axiom.WithCaseName("create user"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryCreateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityBlocker),
+		),
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
@@ -90,12 +96,12 @@ func (s *suite) TestUpdateUser() {
 
 		request := update.GRPCRequest(createdUser.GetUser().GetId())
 
-		authorizationMetadata := metadata.Pairs(
+		authorizationMetadata := grpcmetadata.Pairs(
 			"authorization",
 			"Bearer "+loginResponse.GetToken().GetAccessToken(),
 		)
 
-		contextWithToken := metadata.NewOutgoingContext(context.Background(), authorizationMetadata)
+		contextWithToken := grpcmetadata.NewOutgoingContext(context.Background(), authorizationMetadata)
 
 		response, err := usersClient.UpdateUser(contextWithToken, request)
 
@@ -154,12 +160,12 @@ func (s *suite) TestGetUserMe() {
 
 		request := &v1.Empty{}
 
-		authorizationMetadata := metadata.Pairs(
+		authorizationMetadata := grpcmetadata.Pairs(
 			"authorization",
 			"Bearer "+loginResponse.GetToken().GetAccessToken(),
 		)
 
-		contextWithToken := metadata.NewOutgoingContext(context.Background(), authorizationMetadata)
+		contextWithToken := grpcmetadata.NewOutgoingContext(context.Background(), authorizationMetadata)
 
 		response, err := usersClient.GetMe(contextWithToken, request)
 
