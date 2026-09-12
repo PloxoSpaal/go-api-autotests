@@ -72,25 +72,20 @@ func (u UserCreate) GRPCRequest() *coursev1.CreateUserRequest {
 }
 
 type UserUpdate struct {
-	Email      *string
-	LastName   *string
-	FirstName  *string
-	MiddleName *string
+	Email      string
+	LastName   string
+	FirstName  string
+	MiddleName string
 }
 
 type UserUpdateOption func(*UserUpdate)
 
 func (b *Builder) UserUpdate(options ...UserUpdateOption) UserUpdate {
-	email := b.generator.EmailWithDomain("example.com")
-	lastName := b.generator.LastName()
-	firstName := b.generator.FirstName()
-	middleName := b.generator.MiddleName()
-
 	update := UserUpdate{
-		Email:      &email,
-		LastName:   &lastName,
-		FirstName:  &firstName,
-		MiddleName: &middleName,
+		Email:      b.generator.EmailWithDomain("example.com"),
+		LastName:   b.generator.LastName(),
+		FirstName:  b.generator.FirstName(),
+		MiddleName: b.generator.MiddleName(),
 	}
 
 	for _, option := range options {
@@ -101,36 +96,36 @@ func (b *Builder) UserUpdate(options ...UserUpdateOption) UserUpdate {
 }
 
 func WithUserUpdateEmail(email string) UserUpdateOption {
-	return func(update *UserUpdate) { update.Email = &email }
+	return func(update *UserUpdate) { update.Email = email }
 }
 
 func WithUserUpdateLastName(lastName string) UserUpdateOption {
-	return func(update *UserUpdate) { update.LastName = &lastName }
+	return func(update *UserUpdate) { update.LastName = lastName }
 }
 
 func WithUserUpdateFirstName(firstName string) UserUpdateOption {
-	return func(update *UserUpdate) { update.FirstName = &firstName }
+	return func(update *UserUpdate) { update.FirstName = firstName }
 }
 
 func WithUserUpdateMiddleName(middleName string) UserUpdateOption {
-	return func(update *UserUpdate) { update.MiddleName = &middleName }
+	return func(update *UserUpdate) { update.MiddleName = middleName }
 }
 
 func (u UserUpdate) HTTPRequest() models.UpdateUserRequest {
 	return models.UpdateUserRequest{
-		Email:      u.Email,
-		LastName:   u.LastName,
-		FirstName:  u.FirstName,
-		MiddleName: u.MiddleName,
+		Email:      &u.Email,
+		LastName:   &u.LastName,
+		FirstName:  &u.FirstName,
+		MiddleName: &u.MiddleName,
 	}
 }
 
 func (u UserUpdate) GRPCRequest(userID string) *coursev1.UpdateUserRequest {
 	return &coursev1.UpdateUserRequest{
 		Id:         userID,
-		Email:      u.Email,
-		LastName:   u.LastName,
-		FirstName:  u.FirstName,
-		MiddleName: u.MiddleName,
+		Email:      &u.Email,
+		LastName:   &u.LastName,
+		FirstName:  &u.FirstName,
+		MiddleName: &u.MiddleName,
 	}
 }
