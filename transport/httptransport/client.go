@@ -2,6 +2,8 @@ package httptransport
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -55,6 +57,10 @@ func (c *Client) Do(
 	method string,
 	request Request,
 ) (*resty.Response, error) {
+	if err := request.validate(); err != nil {
+		return nil, err
+	}
+
 	restyRequest := c.resty.R().
 		SetContext(ctx).
 		SetHeaders(request.Headers).
@@ -83,4 +89,36 @@ func (c *Client) Post(ctx context.Context, request Request) (*resty.Response, er
 
 func (c *Client) Patch(ctx context.Context, request Request) (*resty.Response, error) {
 	return c.Do(ctx, http.MethodPatch, request)
+}
+
+func (c *Client) Put(ctx context.Context, request Request) (*resty.Response, error) {
+	return c.Do(ctx, http.MethodPut, request)
+}
+
+func (c *Client) Delete(ctx context.Context, request Request) (*resty.Response, error) {
+	return c.Do(ctx, http.MethodDelete, request)
+}
+
+func (r Request) validate() error {
+	body := r.Body
+	file := r.Files
+	formData := r.FormData
+
+	if body != nil && (formData != nil || file != nil) {
+		return errors.New("httptransport: body cannot be combined with form data or files")
+	}
+
+	for i, file := range r.Files {
+		if file.FieldName == "" {
+			return fmt.Errorf("httptransport: file %d has an empty field name", i)
+		}
+		if file.Filename == "" {
+			return fmt.Errorf("httptransport: file %d has an empty filename", i)
+		}
+		if file.Content == nil {
+			return fmt.Errorf("httptransport: file %d has no content", i)
+		}
+	}
+
+	return nil
 }
