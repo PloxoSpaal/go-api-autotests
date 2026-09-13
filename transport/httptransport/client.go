@@ -41,7 +41,8 @@ func newRestyClient(cfg *axiom.Config, settings config.HTTP) *resty.Client {
 		SetTimeout(settings.Timeout).
 		SetHeader("Accept", "application/json").
 		OnBeforeRequest(onBeforeRequestHook(cfg)).
-		OnAfterResponse(onAfterResponseHook(cfg))
+		OnAfterResponse(onAfterResponseHook(cfg)).
+		OnError(onErrorHook(cfg))
 }
 
 func NewPublic(cfg *axiom.Config, settings config.HTTP) *Client {

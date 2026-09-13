@@ -49,3 +49,18 @@ func onAfterResponseHook(cfg *axiom.Config) resty.ResponseMiddleware {
 		return nil
 	}
 }
+
+func onErrorHook(cfg *axiom.Config) resty.ErrorHook {
+	return func(request *resty.Request, err error) {
+		cfg.Step(fmt.Sprintf("Request error for %s %s", request.Method, request.URL), func() {
+			attachJSON(cfg, "Request headers", request.Header)
+
+			if request.Body != nil {
+				attachJSON(cfg, "Request body", request.Body)
+			}
+
+			cfg.Artefact(axiom.NewTextArtefact("Error", err.Error()))
+			cfg.Log(axiom.NewErrorLog(fmt.Sprint(err.Error())))
+		})
+	}
+}
