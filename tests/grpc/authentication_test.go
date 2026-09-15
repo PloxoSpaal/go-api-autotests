@@ -1,17 +1,16 @@
 package grpc
 
 import (
-	"context"
-
 	v1 "github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
+	"github.com/PloxoSpaal/go-api-autotests/clients/grpcclients"
+	"github.com/PloxoSpaal/go-api-autotests/config"
 	"github.com/PloxoSpaal/go-api-autotests/fake"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
+	"github.com/PloxoSpaal/go-api-autotests/transport/grpctransport"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func (s *suite) TestLogin() {
@@ -25,19 +24,21 @@ func (s *suite) TestLogin() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		builder := builders.New(fake.New())
-		user := builder.UserCreate()
-		createUserRequest := user.GRPCRequest()
+		settings, err := config.Load()
+		require.NoError(cfg.T(), err)
 
-		connection, err := grpc.NewClient(
-			"localhost:9000",
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		)
+		connection, err := grpctransport.NewPublic(cfg, settings.GRPC)
 		require.NoError(cfg.T(), err)
 		defer connection.Close()
 
-		usersClient := v1.NewUsersServiceClient(connection)
-		createdUser, err := usersClient.CreateUser(context.Background(), createUserRequest)
+		usersClient := grpcclients.NewUsersClient(connection)
+		authenticationClient := grpcclients.NewAuthenticationClient(connection)
+
+		builder := builders.New(fake.New())
+		user := builder.UserCreate()
+		userRequest := user.GRPCRequest()
+
+		createdUser, err := usersClient.Create(cfg.Context.Raw, userRequest)
 
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), createdUser)
@@ -49,8 +50,7 @@ func (s *suite) TestLogin() {
 			Password: user.Password,
 		}
 
-		client := v1.NewAuthenticationServiceClient(connection)
-		response, err := client.Login(context.Background(), request)
+		response, err := authenticationClient.Login(cfg.Context.Raw, request)
 
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
