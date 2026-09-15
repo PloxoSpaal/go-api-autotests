@@ -27,27 +27,28 @@ func (s *suite) TestCreateUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
+		settings, err := config.Load()
+		require.NoError(cfg.T(), err)
+
+		publicTransport := httptransport.NewPublic(cfg, settings.HTTP)
+		usersClient := httpclients.NewUsersClient(publicTransport)
+
 		builder := builders.New(fake.New())
 		user := builder.UserCreate()
 		request := user.HTTPRequest()
 
-		var result models.UserResponse
-
-		client := resty.New().SetBaseURL("http://localhost:8000/api/v1")
-
-		response, err := client.R().SetBody(request).SetResult(&result).Post("/users")
+		response, err := usersClient.Create(cfg.Context.Raw, request)
 
 		require.NoError(cfg.T(), err)
-		require.NotNil(cfg.T(), response)
-		require.Equal(cfg.T(), http.StatusOK, response.StatusCode())
-		require.NotEmpty(cfg.T(), result.User.ID)
+		require.Equal(cfg.T(), http.StatusOK, response.StatusCode)
+		require.NotEmpty(cfg.T(), response.Data.User.ID)
 
-		assert.Equal(cfg.T(), request.Email, result.User.Email)
-		assert.Equal(cfg.T(), request.LastName, result.User.LastName)
-		assert.Equal(cfg.T(), request.FirstName, result.User.FirstName)
-		assert.Equal(cfg.T(), request.MiddleName, result.User.MiddleName)
+		assert.Equal(cfg.T(), request.Email, response.Data.User.Email)
+		assert.Equal(cfg.T(), request.LastName, response.Data.User.LastName)
+		assert.Equal(cfg.T(), request.FirstName, response.Data.User.FirstName)
+		assert.Equal(cfg.T(), request.MiddleName, response.Data.User.MiddleName)
 
-		cfg.T().Logf("created user with ID %s", result.User.ID)
+		cfg.T().Logf("created user with ID %s", response.Data.User.ID)
 	})
 }
 
