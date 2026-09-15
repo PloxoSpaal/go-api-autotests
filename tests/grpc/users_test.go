@@ -13,9 +13,6 @@ import (
 	"github.com/PloxoSpaal/go-api-autotests/transport/grpctransport"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	grpcmetadata "google.golang.org/grpc/metadata"
 )
 
 func (s *suite) TestCreateUser() {
@@ -142,21 +139,21 @@ func (s *suite) TestGetUserMe() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
+		settings, err := config.Load()
+		require.NoError(cfg.T(), err)
+
+		publicConnection, err := grpctransport.NewPublic(cfg, settings.GRPC)
+		require.NoError(cfg.T(), err)
+		defer publicConnection.Close()
+
 		builder := builders.New(fake.New())
 		user := builder.UserCreate()
 		userRequest := user.GRPCRequest()
 
-		connection, err := grpc.NewClient(
-			"localhost:9000",
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		)
-		require.NoError(cfg.T(), err)
-		defer connection.Close()
+		publicUsersClient := grpcclients.NewUsersClient(publicConnection)
+		publicAuthenticationClient := grpcclients.NewAuthenticationClient(publicConnection)
 
-		usersClient := v1.NewUsersServiceClient(connection)
-		authenticationClient := v1.NewAuthenticationServiceClient(connection)
-
-		createdUser, err := usersClient.CreateUser(context.Background(), userRequest)
+		createdUser, err := publicUsersClient.Create(cfg.Context.Raw, userRequest)
 
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), createdUser)
@@ -168,23 +165,24 @@ func (s *suite) TestGetUserMe() {
 			Password: userRequest.GetPassword(),
 		}
 
-		loginResponse, err := authenticationClient.Login(context.Background(), loginRequest)
+		loginResponse, err := publicAuthenticationClient.Login(context.Background(), loginRequest)
 
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), loginResponse)
 		require.NotNil(cfg.T(), loginResponse.GetToken())
 		require.NotEmpty(cfg.T(), loginResponse.GetToken().GetAccessToken())
 
-		request := &v1.Empty{}
-
-		authorizationMetadata := grpcmetadata.Pairs(
-			"authorization",
-			"Bearer "+loginResponse.GetToken().GetAccessToken(),
+		privateConnection, err := grpctransport.NewPrivate(
+			cfg,
+			settings.GRPC,
+			loginResponse.GetToken().GetAccessToken(),
 		)
+		require.NoError(cfg.T(), err)
+		defer privateConnection.Close()
 
-		contextWithToken := grpcmetadata.NewOutgoingContext(context.Background(), authorizationMetadata)
+		privateUsersClient := grpcclients.NewUsersClient(privateConnection)
 
-		response, err := usersClient.GetMe(contextWithToken, request)
+		response, err := privateUsersClient.GetMe(context.Background())
 
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
