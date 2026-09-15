@@ -29,19 +29,20 @@ func (s *suite) TestCreateUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
+		settings, err := config.Load()
+		require.NoError(cfg.T(), err)
+
+		connection, err := grpctransport.NewPublic(cfg, settings.GRPC)
+		require.NoError(cfg.T(), err)
+		defer connection.Close()
+
+		usersClient := grpcclients.NewUsersClient(connection)
+
 		builder := builders.New(fake.New())
 		user := builder.UserCreate()
 		request := user.GRPCRequest()
 
-		connection, err := grpc.NewClient(
-			"localhost:9000",
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		)
-		require.NoError(cfg.T(), err)
-		defer connection.Close()
-
-		client := v1.NewUsersServiceClient(connection)
-		response, err := client.CreateUser(context.Background(), request)
+		response, err := usersClient.Create(cfg.Context.Raw, request)
 
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
