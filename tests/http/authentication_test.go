@@ -5,10 +5,10 @@ import (
 
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/clients/httpclients"
+	"github.com/PloxoSpaal/go-api-autotests/fixtures/httpfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
-	"github.com/PloxoSpaal/go-api-autotests/transport/httptransport"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -24,11 +24,9 @@ func (s *suite) TestLoginUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		settings := resources.GetConfigResource(cfg.Runner)
-
-		publicTransport := httptransport.NewPublic(cfg, settings.HTTP)
-		usersClient := httpclients.NewUsersClient(publicTransport)
-		authenticationClient := httpclients.NewAuthenticationClient(publicTransport)
+		transport := httpfixtures.GetPublicTransportFixture(cfg)
+		usersClient := httpclients.NewUsersClient(transport)
+		authenticationClient := httpfixtures.GetAuthenticationClientFixture(cfg)
 
 		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
