@@ -7,7 +7,6 @@ import (
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/httpfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/models"
-	"github.com/PloxoSpaal/go-api-autotests/resources"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -23,26 +22,14 @@ func (s *suite) TestLoginUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
+		userFixture := httpfixtures.GetUserFixture(cfg)
 		authenticationClient := httpfixtures.GetAuthenticationClientFixture(cfg)
-		usersClient := httpfixtures.GetPublicUsersClientFixture(cfg)
-
-		builder := resources.GetBuilderResource(cfg.Runner)
-		user := builder.UserCreate()
-		userRequest := user.HTTPRequest()
-
-		createdUserResponse, err := usersClient.Create(cfg.Context.Raw, userRequest)
-
-		require.NoError(cfg.T(), err)
-		require.Equal(cfg.T(), http.StatusOK, createdUserResponse.StatusCode)
-		require.NotEmpty(cfg.T(), createdUserResponse.Data.User.ID)
 
 		request := models.LoginRequest{
-			Email:    userRequest.Email,
-			Password: userRequest.Password,
+			Email:    userFixture.Request.Email,
+			Password: userFixture.Request.Password,
 		}
-
 		response, err := authenticationClient.Login(cfg.Context.Raw, request)
-
 		require.NoError(cfg.T(), err)
 		require.Equal(cfg.T(), http.StatusOK, response.StatusCode)
 
@@ -50,6 +37,7 @@ func (s *suite) TestLoginUser() {
 		assert.NotEmpty(cfg.T(), response.Data.Token.AccessToken)
 		assert.NotEmpty(cfg.T(), response.Data.Token.RefreshToken)
 
-		cfg.T().Logf("user %s successfully logged in", userRequest.Email)
+		cfg.T().Logf("user %s successfully logged in", request.Email)
 	})
+
 }
