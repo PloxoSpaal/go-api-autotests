@@ -14,8 +14,11 @@ var suiteRunner = tests.Runner.Join(
 			axiom.WithMetaSuite(metadata.SuiteHTTP),
 		),
 		axiom.WithRunnerFixture(httpfixtures.PublicTransportFixtureKey, httpfixtures.SetPublicTransportFixture),
+		axiom.WithRunnerFixture(httpfixtures.PrivateTransportFixtureKey, httpfixtures.SetPrivateTransportFixture),
+
 		axiom.WithRunnerFixture(httpfixtures.AuthenticationClientFixtureKey, httpfixtures.SetAuthenticationClientFixture),
 		axiom.WithRunnerFixture(httpfixtures.PublicUsersClientFixtureKey, httpfixtures.SetPublicUsersClientFixture),
+
 		axiom.WithRunnerFixture(httpfixtures.UserFixtureKey, httpfixtures.SetUserFixture),
 		axiom.WithRunnerFixture(httpfixtures.SessionFixtureKey, httpfixtures.SetSessionFixture),
 	),

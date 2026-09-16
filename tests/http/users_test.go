@@ -8,7 +8,6 @@ import (
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/httpfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
-	"github.com/PloxoSpaal/go-api-autotests/transport/httptransport"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -54,21 +53,13 @@ func (s *suite) TestUpdateUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		settings := resources.GetConfigResource(cfg.Runner)
 		builder := resources.GetBuilderResource(cfg.Runner)
-
-		userFixture := httpfixtures.GetUserFixture(cfg)
-		sessionFixture := httpfixtures.GetSessionFixture(cfg)
-
-		privateTransport := httptransport.NewPrivate(
-			cfg,
-			settings.HTTP,
-			sessionFixture.Response.Data.Token.AccessToken,
-		)
-		privateUsersClient := httpclients.NewUsersClient(privateTransport)
-
 		update := builder.UserUpdate()
 		request := update.HTTPRequest()
+
+		userFixture := httpfixtures.GetUserFixture(cfg)
+		privateTransport := httpfixtures.GetPrivateTransportFixture(cfg)
+		privateUsersClient := httpclients.NewUsersClient(privateTransport)
 
 		response, err := privateUsersClient.Update(
 			cfg.Context.Raw,
@@ -100,16 +91,8 @@ func (s *suite) TestGetUserMe() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		settings := resources.GetConfigResource(cfg.Runner)
-
 		userFixture := httpfixtures.GetUserFixture(cfg)
-		sessionFixture := httpfixtures.GetSessionFixture(cfg)
-
-		privateTransport := httptransport.NewPrivate(
-			cfg,
-			settings.HTTP,
-			sessionFixture.Response.Data.Token.AccessToken,
-		)
+		privateTransport := httpfixtures.GetPrivateTransportFixture(cfg)
 		privateUsersClient := httpclients.NewUsersClient(privateTransport)
 
 		response, err := privateUsersClient.GetMe(cfg.Context.Raw)
