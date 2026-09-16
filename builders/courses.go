@@ -6,11 +6,13 @@ import (
 )
 
 type CourseCreate struct {
-	Title         string
-	MaxScore      int
-	MinScore      int
-	Description   string
-	EstimatedTime string
+	Title           string
+	MaxScore        int
+	MinScore        int
+	Description     string
+	EstimatedTime   string
+	PreviewFileID   string
+	CreatedByUserID string
 }
 
 type CourseCreateOption func(*CourseCreate)
@@ -49,6 +51,14 @@ func WithCourseCreateMinScore(minScore int) CourseCreateOption {
 
 func WithCourseCreateEstimatedTime(estimatedTime string) CourseCreateOption {
 	return func(course *CourseCreate) { course.EstimatedTime = estimatedTime }
+}
+
+func WithCourseCreatePreviewFileID(fileID string) CourseCreateOption {
+	return func(course *CourseCreate) { course.PreviewFileID = fileID }
+}
+
+func WithCourseCreateCreatedByUserID(userID string) CourseCreateOption {
+	return func(course *CourseCreate) { course.CreatedByUserID = userID }
 }
 
 func (c CourseCreate) HTTPRequest(FileID, UserID string) models.CreateCourseRequest {
