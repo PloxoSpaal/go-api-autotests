@@ -5,7 +5,6 @@ import (
 
 	v1 "github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/clients/grpcclients"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
@@ -33,8 +32,7 @@ func (s *suite) TestCreateUser() {
 
 		usersClient := grpcclients.NewUsersClient(connection)
 
-		generator := resources.GetFakeResource(cfg.Runner)
-		builder := builders.New(generator)
+		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		request := user.GRPCRequest()
 
@@ -73,8 +71,7 @@ func (s *suite) TestUpdateUser() {
 		publicUsersClient := grpcclients.NewUsersClient(publicConnection)
 		authenticationClient := grpcclients.NewAuthenticationClient(publicConnection)
 
-		generator := resources.GetFakeResource(cfg.Runner)
-		builder := builders.New(generator)
+		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		userRequest := user.GRPCRequest()
 
@@ -144,8 +141,7 @@ func (s *suite) TestGetUserMe() {
 		require.NoError(cfg.T(), err)
 		defer publicConnection.Close()
 
-		generator := resources.GetFakeResource(cfg.Runner)
-		builder := builders.New(generator)
+		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		userRequest := user.GRPCRequest()
 

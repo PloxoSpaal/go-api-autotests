@@ -14,4 +14,5 @@ var Runner = axiom.NewRunner(
 	),
 	axiom.WithRunnerResource(resources.ConfigResourceKey, resources.SetConfigResource),
 	axiom.WithRunnerResource(resources.FakeResourceKey, resources.SetFakeResource),
+	axiom.WithRunnerResource(resources.BuilderResourceKey, resources.SetBuilderResource),
 )

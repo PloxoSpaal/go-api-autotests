@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/clients/httpclients"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/models"
@@ -31,8 +30,7 @@ func (s *suite) TestLoginUser() {
 		usersClient := httpclients.NewUsersClient(publicTransport)
 		authenticationClient := httpclients.NewAuthenticationClient(publicTransport)
 
-		generator := resources.GetFakeResource(cfg.Runner)
-		builder := builders.New(generator)
+		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		userRequest := user.HTTPRequest()
 

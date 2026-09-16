@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/clients/httpclients"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/models"
@@ -30,8 +29,7 @@ func (s *suite) TestCreateUser() {
 		publicTransport := httptransport.NewPublic(cfg, settings.HTTP)
 		usersClient := httpclients.NewUsersClient(publicTransport)
 
-		generator := resources.GetFakeResource(cfg.Runner)
-		builder := builders.New(generator)
+		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		request := user.HTTPRequest()
 
@@ -66,8 +64,7 @@ func (s *suite) TestUpdateUser() {
 		usersPublicClient := httpclients.NewUsersClient(publicTransport)
 		authenticationClient := httpclients.NewAuthenticationClient(publicTransport)
 
-		generator := resources.GetFakeResource(cfg.Runner)
-		builder := builders.New(generator)
+		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		userRequest := user.HTTPRequest()
 
@@ -126,8 +123,7 @@ func (s *suite) TestGetUserMe() {
 		usersPublicClient := httpclients.NewUsersClient(publicTransport)
 		authenticationClient := httpclients.NewAuthenticationClient(publicTransport)
 
-		generator := resources.GetFakeResource(cfg.Runner)
-		builder := builders.New(generator)
+		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		userRequest := user.HTTPRequest()
 
