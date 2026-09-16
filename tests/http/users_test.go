@@ -25,10 +25,7 @@ func (s *suite) TestCreateUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-
-		transport := httpfixtures.GetPublicTransportFixture(cfg)
-		usersClient := httpclients.NewUsersClient(transport)
-
+		usersClient := httpfixtures.GetPublicUsersClientFixture(cfg)
 		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		request := user.HTTPRequest()
@@ -59,9 +56,7 @@ func (s *suite) TestUpdateUser() {
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		settings := resources.GetConfigResource(cfg.Runner)
-
-		publicTransport := httpfixtures.GetPublicTransportFixture(cfg)
-		usersPublicClient := httpclients.NewUsersClient(publicTransport)
+		usersPublicClient := httpfixtures.GetPublicUsersClientFixture(cfg)
 		authenticationClient := httpfixtures.GetAuthenticationClientFixture(cfg)
 
 		builder := resources.GetBuilderResource(cfg.Runner)
@@ -118,9 +113,7 @@ func (s *suite) TestGetUserMe() {
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		settings := resources.GetConfigResource(cfg.Runner)
-
-		publicTransport := httpfixtures.GetPublicTransportFixture(cfg)
-		usersPublicClient := httpclients.NewUsersClient(publicTransport)
+		usersPublicClient := httpfixtures.GetPublicUsersClientFixture(cfg)
 		authenticationClient := httpfixtures.GetAuthenticationClientFixture(cfg)
 
 		builder := resources.GetBuilderResource(cfg.Runner)

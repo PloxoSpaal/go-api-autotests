@@ -15,6 +15,7 @@ var suiteRunner = tests.Runner.Join(
 		),
 		axiom.WithRunnerFixture(httpfixtures.PublicTransportFixtureKey, httpfixtures.SetPublicTransportFixture),
 		axiom.WithRunnerFixture(httpfixtures.AuthenticationClientFixtureKey, httpfixtures.SetAuthenticationClientFixture),
+		axiom.WithRunnerFixture(httpfixtures.PublicUsersClientFixtureKey, httpfixtures.SetPublicUsersClientFixture),
 	),
 )
 

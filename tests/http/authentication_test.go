@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/clients/httpclients"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/httpfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/models"
@@ -24,9 +23,8 @@ func (s *suite) TestLoginUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		transport := httpfixtures.GetPublicTransportFixture(cfg)
-		usersClient := httpclients.NewUsersClient(transport)
 		authenticationClient := httpfixtures.GetAuthenticationClientFixture(cfg)
+		usersClient := httpfixtures.GetPublicUsersClientFixture(cfg)
 
 		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
