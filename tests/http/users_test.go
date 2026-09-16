@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/clients/httpclients"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/httpfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
@@ -58,8 +57,7 @@ func (s *suite) TestUpdateUser() {
 		request := update.HTTPRequest()
 
 		userFixture := httpfixtures.GetUserFixture(cfg)
-		privateTransport := httpfixtures.GetPrivateTransportFixture(cfg)
-		privateUsersClient := httpclients.NewUsersClient(privateTransport)
+		privateUsersClient := httpfixtures.GetPrivateUsersClientFixture(cfg)
 
 		response, err := privateUsersClient.Update(
 			cfg.Context.Raw,
@@ -92,8 +90,7 @@ func (s *suite) TestGetUserMe() {
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		userFixture := httpfixtures.GetUserFixture(cfg)
-		privateTransport := httpfixtures.GetPrivateTransportFixture(cfg)
-		privateUsersClient := httpclients.NewUsersClient(privateTransport)
+		privateUsersClient := httpfixtures.GetPrivateUsersClientFixture(cfg)
 
 		response, err := privateUsersClient.GetMe(cfg.Context.Raw)
 
