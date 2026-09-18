@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/fixtures/httpfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -81,11 +80,10 @@ func (s *suite) TestGetUserMe() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		userFixture := httpfixtures.GetUserFixture(cfg)
-		privateUsersClient := httpfixtures.GetPrivateUsersClientFixture(cfg)
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		userFixture := tools.User()
 
-		response, err := privateUsersClient.GetMe(cfg.Context.Raw)
+		response, err := tools.PrivateUsersClient().GetMe(cfg.Context.Raw)
 
 		require.NoError(cfg.T(), err)
 		require.Equal(cfg.T(), http.StatusOK, response.StatusCode)
@@ -97,5 +95,5 @@ func (s *suite) TestGetUserMe() {
 		assert.Equal(cfg.T(), userFixture.Response.Data.User.MiddleName, response.Data.User.MiddleName)
 
 		cfg.T().Logf("received current user with ID %s", response.Data.User.ID)
-	})
+	}))
 }
