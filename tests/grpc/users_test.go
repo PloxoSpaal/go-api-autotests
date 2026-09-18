@@ -4,7 +4,6 @@ import (
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
-	"github.com/PloxoSpaal/go-api-autotests/resources"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,14 +18,11 @@ func (s *suite) TestCreateUser() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		builder := resources.GetBuilderResource(cfg.Runner)
-		usersClient := grpcfixtures.GetPublicUsersClientFixture(cfg)
-
-		user := builder.UserCreate()
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		user := tools.Builder.UserCreate()
 		request := user.GRPCRequest()
 
-		response, err := usersClient.Create(cfg.Context.Raw, request)
+		response, err := tools.PublicUsersClient().Create(cfg.Context.Raw, request)
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
 		require.NotNil(cfg.T(), response.GetUser())
@@ -38,7 +34,7 @@ func (s *suite) TestCreateUser() {
 		assert.Equal(cfg.T(), request.GetMiddleName(), response.GetUser().GetMiddleName())
 
 		cfg.T().Logf("created user with ID %s", response.GetUser().GetId())
-	})
+	}))
 }
 
 func (s *suite) TestUpdateUser() {
@@ -50,16 +46,13 @@ func (s *suite) TestUpdateUser() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		builder := resources.GetBuilderResource(cfg.Runner)
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		userFixture := tools.User()
 
-		userFixture := grpcfixtures.GetUserFixture(cfg)
-		privateUsersClient := grpcfixtures.GetPrivateUsersClientFixture(cfg)
-
-		update := builder.UserUpdate()
+		update := tools.Builder.UserUpdate()
 		request := update.GRPCRequest(userFixture.Response.GetUser().GetId())
 
-		response, err := privateUsersClient.Update(cfg.Context.Raw, request)
+		response, err := tools.PrivateUsersClient().Update(cfg.Context.Raw, request)
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
 		require.NotNil(cfg.T(), response.GetUser())
@@ -71,7 +64,7 @@ func (s *suite) TestUpdateUser() {
 		assert.Equal(cfg.T(), request.GetMiddleName(), response.GetUser().GetMiddleName())
 
 		cfg.T().Logf("updated user with ID %s", response.GetUser().GetId())
-	})
+	}))
 }
 
 func (s *suite) TestGetUserMe() {

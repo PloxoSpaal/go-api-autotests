@@ -13,6 +13,8 @@ var suiteRunner = tests.Runner.Join(
 			axiom.WithMetaTag(metadata.TagGRPC),
 			axiom.WithMetaSuite(metadata.SuiteGRPC),
 		),
+		axiom.WithRunnerHooks(axiom.WithBeforeTest(suiteToolset.Bind)),
+
 		axiom.WithRunnerFixture(grpcfixtures.PublicConnectionFixtureKey, grpcfixtures.SetPublicConnectionFixture),
 		axiom.WithRunnerFixture(grpcfixtures.PrivateConnectionFixtureKey, grpcfixtures.SetPrivateConnectionFixture),
 
