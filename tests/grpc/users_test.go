@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/clients/grpcclients"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
@@ -55,10 +54,8 @@ func (s *suite) TestUpdateUser() {
 		builder := resources.GetBuilderResource(cfg.Runner)
 
 		userFixture := grpcfixtures.GetUserFixture(cfg)
+		privateUsersClient := grpcfixtures.GetPrivateUsersClientFixture(cfg)
 
-		privateConnection := grpcfixtures.GetPrivateConnectionFixture(cfg)
-
-		privateUsersClient := grpcclients.NewUsersClient(privateConnection)
 		update := builder.UserUpdate()
 		request := update.GRPCRequest(userFixture.Response.GetUser().GetId())
 
@@ -89,9 +86,8 @@ func (s *suite) TestGetUserMe() {
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		userFixture := grpcfixtures.GetUserFixture(cfg)
-		privateConnection := grpcfixtures.GetPrivateConnectionFixture(cfg)
+		privateUsersClient := grpcfixtures.GetPrivateUsersClientFixture(cfg)
 
-		privateUsersClient := grpcclients.NewUsersClient(privateConnection)
 		response, err := privateUsersClient.GetMe(cfg.Context.Raw)
 
 		require.NoError(cfg.T(), err)
