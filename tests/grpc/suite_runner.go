@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"github.com/Nikita-Filonov/axiom"
+	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/tests"
 )
@@ -12,6 +13,8 @@ var suiteRunner = tests.Runner.Join(
 			axiom.WithMetaTag(metadata.TagGRPC),
 			axiom.WithMetaSuite(metadata.SuiteGRPC),
 		),
+		axiom.WithRunnerFixture(grpcfixtures.PublicConnectionFixtureKey, grpcfixtures.SetPublicConnectionFixture),
+		axiom.WithRunnerFixture(grpcfixtures.AuthenticationClientFixtureKey, grpcfixtures.SetAuthenticationClientFixture),
 	),
 )
 

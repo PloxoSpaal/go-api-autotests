@@ -1,12 +1,12 @@
 package grpc
 
 import (
-	v1 "github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
+	"github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/clients/grpcclients"
+	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
-	"github.com/PloxoSpaal/go-api-autotests/transport/grpctransport"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,31 +22,23 @@ func (s *suite) TestLogin() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		settings := resources.GetConfigResource(cfg.Runner)
+		builder := resources.GetBuilderResource(cfg.Runner)
 
-		connection, err := grpctransport.NewPublic(cfg, settings.GRPC)
-		require.NoError(cfg.T(), err)
-		defer connection.Close()
+		connection := grpcfixtures.GetPublicConnectionFixture(cfg)
 
 		usersClient := grpcclients.NewUsersClient(connection)
-		authenticationClient := grpcclients.NewAuthenticationClient(connection)
+		authenticationClient := grpcfixtures.GetAuthenticationClientFixture(cfg)
 
-		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		userRequest := user.GRPCRequest()
 
 		createdUser, err := usersClient.Create(cfg.Context.Raw, userRequest)
-
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), createdUser)
 		require.NotNil(cfg.T(), createdUser.GetUser())
 		require.NotEmpty(cfg.T(), createdUser.GetUser().GetId())
 
-		request := &v1.LoginRequest{
-			Email:    user.Email,
-			Password: user.Password,
-		}
-
+		request := &v1.LoginRequest{Email: user.Email, Password: user.Password}
 		response, err := authenticationClient.Login(cfg.Context.Raw, request)
 
 		require.NoError(cfg.T(), err)

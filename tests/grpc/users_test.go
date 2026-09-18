@@ -1,11 +1,10 @@
 package grpc
 
 import (
-	"context"
-
-	v1 "github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
+	"github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/clients/grpcclients"
+	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
 	"github.com/PloxoSpaal/go-api-autotests/transport/grpctransport"
@@ -24,20 +23,15 @@ func (s *suite) TestCreateUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		settings := resources.GetConfigResource(cfg.Runner)
+		builder := resources.GetBuilderResource(cfg.Runner)
 
-		connection, err := grpctransport.NewPublic(cfg, settings.GRPC)
-		require.NoError(cfg.T(), err)
-		defer connection.Close()
-
+		connection := grpcfixtures.GetPublicConnectionFixture(cfg)
 		usersClient := grpcclients.NewUsersClient(connection)
 
-		builder := resources.GetBuilderResource(cfg.Runner)
 		user := builder.UserCreate()
 		request := user.GRPCRequest()
 
 		response, err := usersClient.Create(cfg.Context.Raw, request)
-
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
 		require.NotNil(cfg.T(), response.GetUser())
@@ -63,20 +57,16 @@ func (s *suite) TestUpdateUser() {
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		settings := resources.GetConfigResource(cfg.Runner)
-
-		publicConnection, err := grpctransport.NewPublic(cfg, settings.GRPC)
-		require.NoError(cfg.T(), err)
-		defer publicConnection.Close()
-
-		publicUsersClient := grpcclients.NewUsersClient(publicConnection)
-		authenticationClient := grpcclients.NewAuthenticationClient(publicConnection)
-
 		builder := resources.GetBuilderResource(cfg.Runner)
+
+		publicConnection := grpcfixtures.GetPublicConnectionFixture(cfg)
+		publicUsersClient := grpcclients.NewUsersClient(publicConnection)
+		authenticationClient := grpcfixtures.GetAuthenticationClientFixture(cfg)
+
 		user := builder.UserCreate()
 		userRequest := user.GRPCRequest()
 
 		createdUser, err := publicUsersClient.Create(cfg.Context.Raw, userRequest)
-
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), createdUser)
 		require.NotNil(cfg.T(), createdUser.GetUser())
@@ -84,12 +74,8 @@ func (s *suite) TestUpdateUser() {
 
 		loginResponse, err := authenticationClient.Login(
 			cfg.Context.Raw,
-			&v1.LoginRequest{
-				Email:    user.Email,
-				Password: user.Password,
-			},
+			&v1.LoginRequest{Email: user.Email, Password: user.Password},
 		)
-
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), loginResponse)
 		require.NotNil(cfg.T(), loginResponse.GetToken())
@@ -104,12 +90,10 @@ func (s *suite) TestUpdateUser() {
 		defer privateConnection.Close()
 
 		privateUsersClient := grpcclients.NewUsersClient(privateConnection)
-
 		update := builder.UserUpdate()
 		request := update.GRPCRequest(createdUser.GetUser().GetId())
 
 		response, err := privateUsersClient.Update(cfg.Context.Raw, request)
-
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
 		require.NotNil(cfg.T(), response.GetUser())
@@ -136,32 +120,25 @@ func (s *suite) TestGetUserMe() {
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		settings := resources.GetConfigResource(cfg.Runner)
-
-		publicConnection, err := grpctransport.NewPublic(cfg, settings.GRPC)
-		require.NoError(cfg.T(), err)
-		defer publicConnection.Close()
-
 		builder := resources.GetBuilderResource(cfg.Runner)
+
+		publicConnection := grpcfixtures.GetPublicConnectionFixture(cfg)
+		publicUsersClient := grpcclients.NewUsersClient(publicConnection)
+		authenticationClient := grpcfixtures.GetAuthenticationClientFixture(cfg)
+
 		user := builder.UserCreate()
 		userRequest := user.GRPCRequest()
 
-		publicUsersClient := grpcclients.NewUsersClient(publicConnection)
-		publicAuthenticationClient := grpcclients.NewAuthenticationClient(publicConnection)
-
 		createdUser, err := publicUsersClient.Create(cfg.Context.Raw, userRequest)
-
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), createdUser)
 		require.NotNil(cfg.T(), createdUser.GetUser())
 		require.NotEmpty(cfg.T(), createdUser.GetUser().GetId())
 
-		loginRequest := &v1.LoginRequest{
-			Email:    userRequest.GetEmail(),
-			Password: userRequest.GetPassword(),
-		}
-
-		loginResponse, err := publicAuthenticationClient.Login(context.Background(), loginRequest)
-
+		loginResponse, err := authenticationClient.Login(
+			cfg.Context.Raw,
+			&v1.LoginRequest{Email: user.Email, Password: user.Password},
+		)
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), loginResponse)
 		require.NotNil(cfg.T(), loginResponse.GetToken())
@@ -176,19 +153,18 @@ func (s *suite) TestGetUserMe() {
 		defer privateConnection.Close()
 
 		privateUsersClient := grpcclients.NewUsersClient(privateConnection)
-
-		response, err := privateUsersClient.GetMe(context.Background())
+		response, err := privateUsersClient.GetMe(cfg.Context.Raw)
 
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
 		require.NotNil(cfg.T(), response.GetUser())
 
 		assert.Equal(cfg.T(), createdUser.GetUser().GetId(), response.GetUser().GetId())
-		assert.Equal(cfg.T(), userRequest.GetEmail(), response.GetUser().GetEmail())
-		assert.Equal(cfg.T(), userRequest.GetLastName(), response.GetUser().GetLastName())
-		assert.Equal(cfg.T(), userRequest.GetFirstName(), response.GetUser().GetFirstName())
-		assert.Equal(cfg.T(), userRequest.GetMiddleName(), response.GetUser().GetMiddleName())
+		assert.Equal(cfg.T(), createdUser.GetUser().GetEmail(), response.GetUser().GetEmail())
+		assert.Equal(cfg.T(), createdUser.GetUser().GetLastName(), response.GetUser().GetLastName())
+		assert.Equal(cfg.T(), createdUser.GetUser().GetFirstName(), response.GetUser().GetFirstName())
+		assert.Equal(cfg.T(), createdUser.GetUser().GetMiddleName(), response.GetUser().GetMiddleName())
 
-		cfg.T().Logf("received user with ID %s", response.GetUser().GetId())
+		cfg.T().Logf("received current user with ID %s", response.GetUser().GetId())
 	})
 }
