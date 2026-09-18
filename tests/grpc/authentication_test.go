@@ -3,7 +3,6 @@ package grpc
 import (
 	"github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/clients/grpcclients"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
@@ -24,10 +23,8 @@ func (s *suite) TestLogin() {
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		builder := resources.GetBuilderResource(cfg.Runner)
 
-		connection := grpcfixtures.GetPublicConnectionFixture(cfg)
-
-		usersClient := grpcclients.NewUsersClient(connection)
 		authenticationClient := grpcfixtures.GetAuthenticationClientFixture(cfg)
+		usersClient := grpcfixtures.GetPublicUsersClientFixture(cfg)
 
 		user := builder.UserCreate()
 		userRequest := user.GRPCRequest()

@@ -24,9 +24,7 @@ func (s *suite) TestCreateUser() {
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		builder := resources.GetBuilderResource(cfg.Runner)
-
-		connection := grpcfixtures.GetPublicConnectionFixture(cfg)
-		usersClient := grpcclients.NewUsersClient(connection)
+		usersClient := grpcfixtures.GetPublicUsersClientFixture(cfg)
 
 		user := builder.UserCreate()
 		request := user.GRPCRequest()
@@ -59,8 +57,7 @@ func (s *suite) TestUpdateUser() {
 		settings := resources.GetConfigResource(cfg.Runner)
 		builder := resources.GetBuilderResource(cfg.Runner)
 
-		publicConnection := grpcfixtures.GetPublicConnectionFixture(cfg)
-		publicUsersClient := grpcclients.NewUsersClient(publicConnection)
+		publicUsersClient := grpcfixtures.GetPublicUsersClientFixture(cfg)
 		authenticationClient := grpcfixtures.GetAuthenticationClientFixture(cfg)
 
 		user := builder.UserCreate()
@@ -122,8 +119,7 @@ func (s *suite) TestGetUserMe() {
 		settings := resources.GetConfigResource(cfg.Runner)
 		builder := resources.GetBuilderResource(cfg.Runner)
 
-		publicConnection := grpcfixtures.GetPublicConnectionFixture(cfg)
-		publicUsersClient := grpcclients.NewUsersClient(publicConnection)
+		publicUsersClient := grpcfixtures.GetPublicUsersClientFixture(cfg)
 		authenticationClient := grpcfixtures.GetAuthenticationClientFixture(cfg)
 
 		user := builder.UserCreate()
