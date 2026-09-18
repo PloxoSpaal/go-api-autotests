@@ -20,6 +20,7 @@ var suiteRunner = tests.Runner.Join(
 		axiom.WithRunnerFixture(grpcfixtures.PrivateUsersClientFixtureKey, grpcfixtures.SetPrivateUsersClientFixture),
 		axiom.WithRunnerFixture(grpcfixtures.AuthenticationClientFixtureKey, grpcfixtures.SetAuthenticationClientFixture),
 		axiom.WithRunnerFixture(grpcfixtures.FilesClientFixtureKey, grpcfixtures.SetFilesClientFixture),
+		axiom.WithRunnerFixture(grpcfixtures.CoursesClientFixtureKey, grpcfixtures.SetCoursesClientFixture),
 
 		axiom.WithRunnerFixture(grpcfixtures.UserFixtureKey, grpcfixtures.SetUserFixture),
 		axiom.WithRunnerFixture(grpcfixtures.SessionFixtureKey, grpcfixtures.SetSessionFixture),
