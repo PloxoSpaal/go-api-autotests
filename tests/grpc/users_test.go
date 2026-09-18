@@ -6,7 +6,6 @@ import (
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
-	"github.com/PloxoSpaal/go-api-autotests/transport/grpctransport"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -53,19 +52,11 @@ func (s *suite) TestUpdateUser() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		settings := resources.GetConfigResource(cfg.Runner)
 		builder := resources.GetBuilderResource(cfg.Runner)
 
 		userFixture := grpcfixtures.GetUserFixture(cfg)
-		sessionFixture := grpcfixtures.GetSessionFixture(cfg)
 
-		privateConnection, err := grpctransport.NewPrivate(
-			cfg,
-			settings.GRPC,
-			sessionFixture.Response.GetToken().GetAccessToken(),
-		)
-		require.NoError(cfg.T(), err)
-		defer privateConnection.Close()
+		privateConnection := grpcfixtures.GetPrivateConnectionFixture(cfg)
 
 		privateUsersClient := grpcclients.NewUsersClient(privateConnection)
 		update := builder.UserUpdate()
@@ -97,18 +88,8 @@ func (s *suite) TestGetUserMe() {
 	)
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
-		settings := resources.GetConfigResource(cfg.Runner)
-
 		userFixture := grpcfixtures.GetUserFixture(cfg)
-		sessionFixture := grpcfixtures.GetSessionFixture(cfg)
-
-		privateConnection, err := grpctransport.NewPrivate(
-			cfg,
-			settings.GRPC,
-			sessionFixture.Response.GetToken().GetAccessToken(),
-		)
-		require.NoError(cfg.T(), err)
-		defer privateConnection.Close()
+		privateConnection := grpcfixtures.GetPrivateConnectionFixture(cfg)
 
 		privateUsersClient := grpcclients.NewUsersClient(privateConnection)
 		response, err := privateUsersClient.GetMe(cfg.Context.Raw)

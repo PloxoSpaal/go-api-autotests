@@ -14,6 +14,8 @@ var suiteRunner = tests.Runner.Join(
 			axiom.WithMetaSuite(metadata.SuiteGRPC),
 		),
 		axiom.WithRunnerFixture(grpcfixtures.PublicConnectionFixtureKey, grpcfixtures.SetPublicConnectionFixture),
+		axiom.WithRunnerFixture(grpcfixtures.PrivateConnectionFixtureKey, grpcfixtures.SetPrivateConnectionFixture),
+
 		axiom.WithRunnerFixture(grpcfixtures.AuthenticationClientFixtureKey, grpcfixtures.SetAuthenticationClientFixture),
 		axiom.WithRunnerFixture(grpcfixtures.PublicUsersClientFixtureKey, grpcfixtures.SetPublicUsersClientFixture),
 
