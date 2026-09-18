@@ -36,6 +36,16 @@ func (t *suiteTools) AuthenticationClient() *grpcclients.AuthenticationClient {
 	return grpcfixtures.GetAuthenticationClientFixture(t.cfg)
 }
 
+func (t *suiteTools) FilesClient() *grpcclients.FilesClient {
+	return grpcfixtures.GetFilesClientFixture(t.cfg)
+}
+func (t *suiteTools) CoursesClient() *grpcclients.CoursesClient {
+	return grpcfixtures.GetCoursesClientFixture(t.cfg)
+}
+func (t *suiteTools) ExercisesClient() *grpcclients.ExercisesClient {
+	return grpcfixtures.GetExercisesClientFixture(t.cfg)
+}
+
 func (t *suiteTools) User() grpcfixtures.UserFixture {
 	return grpcfixtures.GetUserFixture(t.cfg)
 }
