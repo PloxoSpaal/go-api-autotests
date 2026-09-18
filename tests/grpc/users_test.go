@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/clients/grpcclients"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
@@ -57,45 +56,27 @@ func (s *suite) TestUpdateUser() {
 		settings := resources.GetConfigResource(cfg.Runner)
 		builder := resources.GetBuilderResource(cfg.Runner)
 
-		publicUsersClient := grpcfixtures.GetPublicUsersClientFixture(cfg)
-		authenticationClient := grpcfixtures.GetAuthenticationClientFixture(cfg)
-
-		user := builder.UserCreate()
-		userRequest := user.GRPCRequest()
-
-		createdUser, err := publicUsersClient.Create(cfg.Context.Raw, userRequest)
-		require.NoError(cfg.T(), err)
-		require.NotNil(cfg.T(), createdUser)
-		require.NotNil(cfg.T(), createdUser.GetUser())
-		require.NotEmpty(cfg.T(), createdUser.GetUser().GetId())
-
-		loginResponse, err := authenticationClient.Login(
-			cfg.Context.Raw,
-			&v1.LoginRequest{Email: user.Email, Password: user.Password},
-		)
-		require.NoError(cfg.T(), err)
-		require.NotNil(cfg.T(), loginResponse)
-		require.NotNil(cfg.T(), loginResponse.GetToken())
-		require.NotEmpty(cfg.T(), loginResponse.GetToken().GetAccessToken())
+		userFixture := grpcfixtures.GetUserFixture(cfg)
+		sessionFixture := grpcfixtures.GetSessionFixture(cfg)
 
 		privateConnection, err := grpctransport.NewPrivate(
 			cfg,
 			settings.GRPC,
-			loginResponse.GetToken().GetAccessToken(),
+			sessionFixture.Response.GetToken().GetAccessToken(),
 		)
 		require.NoError(cfg.T(), err)
 		defer privateConnection.Close()
 
 		privateUsersClient := grpcclients.NewUsersClient(privateConnection)
 		update := builder.UserUpdate()
-		request := update.GRPCRequest(createdUser.GetUser().GetId())
+		request := update.GRPCRequest(userFixture.Response.GetUser().GetId())
 
 		response, err := privateUsersClient.Update(cfg.Context.Raw, request)
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
 		require.NotNil(cfg.T(), response.GetUser())
 
-		assert.Equal(cfg.T(), createdUser.GetUser().GetId(), response.GetUser().GetId())
+		assert.Equal(cfg.T(), userFixture.Response.GetUser().GetId(), response.GetUser().GetId())
 		assert.Equal(cfg.T(), request.GetEmail(), response.GetUser().GetEmail())
 		assert.Equal(cfg.T(), request.GetLastName(), response.GetUser().GetLastName())
 		assert.Equal(cfg.T(), request.GetFirstName(), response.GetUser().GetFirstName())
@@ -117,33 +98,14 @@ func (s *suite) TestGetUserMe() {
 
 	s.RunCase(testCase, func(cfg *axiom.Config) {
 		settings := resources.GetConfigResource(cfg.Runner)
-		builder := resources.GetBuilderResource(cfg.Runner)
 
-		publicUsersClient := grpcfixtures.GetPublicUsersClientFixture(cfg)
-		authenticationClient := grpcfixtures.GetAuthenticationClientFixture(cfg)
-
-		user := builder.UserCreate()
-		userRequest := user.GRPCRequest()
-
-		createdUser, err := publicUsersClient.Create(cfg.Context.Raw, userRequest)
-		require.NoError(cfg.T(), err)
-		require.NotNil(cfg.T(), createdUser)
-		require.NotNil(cfg.T(), createdUser.GetUser())
-		require.NotEmpty(cfg.T(), createdUser.GetUser().GetId())
-
-		loginResponse, err := authenticationClient.Login(
-			cfg.Context.Raw,
-			&v1.LoginRequest{Email: user.Email, Password: user.Password},
-		)
-		require.NoError(cfg.T(), err)
-		require.NotNil(cfg.T(), loginResponse)
-		require.NotNil(cfg.T(), loginResponse.GetToken())
-		require.NotEmpty(cfg.T(), loginResponse.GetToken().GetAccessToken())
+		userFixture := grpcfixtures.GetUserFixture(cfg)
+		sessionFixture := grpcfixtures.GetSessionFixture(cfg)
 
 		privateConnection, err := grpctransport.NewPrivate(
 			cfg,
 			settings.GRPC,
-			loginResponse.GetToken().GetAccessToken(),
+			sessionFixture.Response.GetToken().GetAccessToken(),
 		)
 		require.NoError(cfg.T(), err)
 		defer privateConnection.Close()
@@ -155,11 +117,11 @@ func (s *suite) TestGetUserMe() {
 		require.NotNil(cfg.T(), response)
 		require.NotNil(cfg.T(), response.GetUser())
 
-		assert.Equal(cfg.T(), createdUser.GetUser().GetId(), response.GetUser().GetId())
-		assert.Equal(cfg.T(), createdUser.GetUser().GetEmail(), response.GetUser().GetEmail())
-		assert.Equal(cfg.T(), createdUser.GetUser().GetLastName(), response.GetUser().GetLastName())
-		assert.Equal(cfg.T(), createdUser.GetUser().GetFirstName(), response.GetUser().GetFirstName())
-		assert.Equal(cfg.T(), createdUser.GetUser().GetMiddleName(), response.GetUser().GetMiddleName())
+		assert.Equal(cfg.T(), userFixture.Response.GetUser().GetId(), response.GetUser().GetId())
+		assert.Equal(cfg.T(), userFixture.Response.GetUser().GetEmail(), response.GetUser().GetEmail())
+		assert.Equal(cfg.T(), userFixture.Response.GetUser().GetLastName(), response.GetUser().GetLastName())
+		assert.Equal(cfg.T(), userFixture.Response.GetUser().GetFirstName(), response.GetUser().GetFirstName())
+		assert.Equal(cfg.T(), userFixture.Response.GetUser().GetMiddleName(), response.GetUser().GetMiddleName())
 
 		cfg.T().Logf("received current user with ID %s", response.GetUser().GetId())
 	})
