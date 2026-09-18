@@ -40,4 +40,14 @@ func (t *suiteTools) User() httpfixtures.UserFixture {
 	return httpfixtures.GetUserFixture(t.cfg)
 }
 
+func (t *suiteTools) FilesClient() *httpclients.FilesClient {
+	return httpfixtures.GetFilesClientFixture(t.cfg)
+}
+func (t *suiteTools) CoursesClient() *httpclients.CoursesClient {
+	return httpfixtures.GetCoursesClientFixture(t.cfg)
+}
+func (t *suiteTools) ExercisesClient() *httpclients.ExercisesClient {
+	return httpfixtures.GetExercisesClientFixture(t.cfg)
+}
+
 var suiteToolset = axiom.NewToolset("http.tools", newSuiteTools)
