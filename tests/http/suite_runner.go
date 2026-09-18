@@ -25,6 +25,8 @@ var suiteRunner = tests.Runner.Join(
 
 		axiom.WithRunnerFixture(httpfixtures.UserFixtureKey, httpfixtures.SetUserFixture),
 		axiom.WithRunnerFixture(httpfixtures.FileFixtureKey, httpfixtures.SetFileFixture),
+		axiom.WithRunnerFixture(httpfixtures.CourseFixtureKey, httpfixtures.SetCourseFixture),
+		axiom.WithRunnerFixture(httpfixtures.ExerciseFixtureKey, httpfixtures.SetExerciseFixture),
 		axiom.WithRunnerFixture(httpfixtures.SessionFixtureKey, httpfixtures.SetSessionFixture),
 	),
 )

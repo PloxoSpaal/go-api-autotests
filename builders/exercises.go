@@ -62,10 +62,10 @@ func WithExerciseCreateEstimatedTime(estimatedTime string) ExerciseCreateOption 
 	return func(exercise *ExerciseCreate) { exercise.EstimatedTime = estimatedTime }
 }
 
-func (c ExerciseCreate) HTTPRequest(courseId string) models.CreateExerciseRequest {
+func (c ExerciseCreate) HTTPRequest() models.CreateExerciseRequest {
 	return models.CreateExerciseRequest{
 		Title:         c.Title,
-		CourseId:      courseId,
+		CourseId:      c.CourseId,
 		MaxScore:      &c.MaxScore,
 		MinScore:      &c.MinScore,
 		OrderIndex:    &c.OrderIndex,
@@ -74,13 +74,13 @@ func (c ExerciseCreate) HTTPRequest(courseId string) models.CreateExerciseReques
 	}
 }
 
-func (c ExerciseCreate) GRPCRequest(courseId string) *coursev1.CreateExerciseRequest {
+func (c ExerciseCreate) GRPCRequest() *coursev1.CreateExerciseRequest {
 	maxScore := int32(c.MaxScore)
 	minScore := int32(c.MinScore)
 
 	return &coursev1.CreateExerciseRequest{
 		Title:         c.Title,
-		CourseId:      courseId,
+		CourseId:      c.CourseId,
 		MaxScore:      &maxScore,
 		MinScore:      &minScore,
 		OrderIndex:    int32(c.OrderIndex),

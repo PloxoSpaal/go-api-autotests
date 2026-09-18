@@ -61,27 +61,27 @@ func WithCourseCreateCreatedByUserID(userID string) CourseCreateOption {
 	return func(course *CourseCreate) { course.CreatedByUserID = userID }
 }
 
-func (c CourseCreate) HTTPRequest(FileID, UserID string) models.CreateCourseRequest {
+func (c CourseCreate) HTTPRequest() models.CreateCourseRequest {
 	return models.CreateCourseRequest{
 		Title:           c.Title,
 		MaxScore:        &c.MaxScore,
 		MinScore:        &c.MinScore,
 		Description:     c.Description,
 		EstimatedTime:   &c.EstimatedTime,
-		PreviewFileID:   FileID,
-		CreatedByUserID: UserID,
+		PreviewFileID:   c.PreviewFileID,
+		CreatedByUserID: c.CreatedByUserID,
 	}
 }
 
-func (c CourseCreate) GRPCRequest(FileID, UserID string) *coursev1.CreateCourseRequest {
+func (c CourseCreate) GRPCRequest() *coursev1.CreateCourseRequest {
 	return &coursev1.CreateCourseRequest{
 		Title:           c.Title,
 		MaxScore:        new(int32(c.MaxScore)),
 		MinScore:        new(int32(c.MinScore)),
 		Description:     c.Description,
 		EstimatedTime:   &c.EstimatedTime,
-		PreviewFileId:   FileID,
-		CreatedByUserId: UserID,
+		PreviewFileId:   c.PreviewFileID,
+		CreatedByUserId: c.CreatedByUserID,
 	}
 }
 
