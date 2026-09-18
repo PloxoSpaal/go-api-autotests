@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -77,11 +76,10 @@ func (s *suite) TestGetUserMe() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		userFixture := grpcfixtures.GetUserFixture(cfg)
-		privateUsersClient := grpcfixtures.GetPrivateUsersClientFixture(cfg)
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		userFixture := tools.User()
 
-		response, err := privateUsersClient.GetMe(cfg.Context.Raw)
+		response, err := tools.PrivateUsersClient().GetMe(cfg.Context.Raw)
 
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
@@ -94,5 +92,5 @@ func (s *suite) TestGetUserMe() {
 		assert.Equal(cfg.T(), userFixture.Response.GetUser().GetMiddleName(), response.GetUser().GetMiddleName())
 
 		cfg.T().Logf("received current user with ID %s", response.GetUser().GetId())
-	})
+	}))
 }
