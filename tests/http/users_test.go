@@ -6,7 +6,6 @@ import (
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/httpfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
-	"github.com/PloxoSpaal/go-api-autotests/resources"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -21,14 +20,11 @@ func (s *suite) TestCreateUser() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		usersClient := httpfixtures.GetPublicUsersClientFixture(cfg)
-		builder := resources.GetBuilderResource(cfg.Runner)
-		user := builder.UserCreate()
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		user := tools.Builder.UserCreate()
 		request := user.HTTPRequest()
 
-		response, err := usersClient.Create(cfg.Context.Raw, request)
-
+		response, err := tools.PublicUsersClient().Create(cfg.Context.Raw, request)
 		require.NoError(cfg.T(), err)
 		require.Equal(cfg.T(), http.StatusOK, response.StatusCode)
 		require.NotEmpty(cfg.T(), response.Data.User.ID)
@@ -39,7 +35,7 @@ func (s *suite) TestCreateUser() {
 		assert.Equal(cfg.T(), request.MiddleName, response.Data.User.MiddleName)
 
 		cfg.T().Logf("created user with ID %s", response.Data.User.ID)
-	})
+	}))
 }
 
 func (s *suite) TestUpdateUser() {
@@ -51,20 +47,17 @@ func (s *suite) TestUpdateUser() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		builder := resources.GetBuilderResource(cfg.Runner)
-		update := builder.UserUpdate()
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		userFixture := tools.User()
+
+		update := tools.Builder.UserUpdate()
 		request := update.HTTPRequest()
 
-		userFixture := httpfixtures.GetUserFixture(cfg)
-		privateUsersClient := httpfixtures.GetPrivateUsersClientFixture(cfg)
-
-		response, err := privateUsersClient.Update(
+		response, err := tools.PrivateUsersClient().Update(
 			cfg.Context.Raw,
 			userFixture.Response.Data.User.ID,
 			request,
 		)
-
 		require.NoError(cfg.T(), err)
 		require.Equal(cfg.T(), http.StatusOK, response.StatusCode)
 
@@ -75,7 +68,7 @@ func (s *suite) TestUpdateUser() {
 		assert.Equal(cfg.T(), *request.MiddleName, response.Data.User.MiddleName)
 
 		cfg.T().Logf("updated user with ID %s", response.Data.User.ID)
-	})
+	}))
 }
 
 func (s *suite) TestGetUserMe() {

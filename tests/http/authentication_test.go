@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/Nikita-Filonov/axiom"
-	"github.com/PloxoSpaal/go-api-autotests/fixtures/httpfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 	"github.com/stretchr/testify/assert"
@@ -21,15 +20,14 @@ func (s *suite) TestLoginUser() {
 		),
 	)
 
-	s.RunCase(testCase, func(cfg *axiom.Config) {
-		userFixture := httpfixtures.GetUserFixture(cfg)
-		authenticationClient := httpfixtures.GetAuthenticationClientFixture(cfg)
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		userFixture := tools.User()
 
 		request := models.LoginRequest{
 			Email:    userFixture.Request.Email,
 			Password: userFixture.Request.Password,
 		}
-		response, err := authenticationClient.Login(cfg.Context.Raw, request)
+		response, err := tools.AuthenticationClient().Login(cfg.Context.Raw, request)
 		require.NoError(cfg.T(), err)
 		require.Equal(cfg.T(), http.StatusOK, response.StatusCode)
 
@@ -38,6 +36,5 @@ func (s *suite) TestLoginUser() {
 		assert.NotEmpty(cfg.T(), response.Data.Token.RefreshToken)
 
 		cfg.T().Logf("user %s successfully logged in", request.Email)
-	})
-
+	}))
 }

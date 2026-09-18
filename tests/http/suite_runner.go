@@ -13,6 +13,8 @@ var suiteRunner = tests.Runner.Join(
 			axiom.WithMetaTag(metadata.TagHTTP),
 			axiom.WithMetaSuite(metadata.SuiteHTTP),
 		),
+		axiom.WithRunnerHooks(axiom.WithBeforeTest(suiteToolset.Bind)),
+
 		axiom.WithRunnerFixture(httpfixtures.PublicTransportFixtureKey, httpfixtures.SetPublicTransportFixture),
 		axiom.WithRunnerFixture(httpfixtures.PrivateTransportFixtureKey, httpfixtures.SetPrivateTransportFixture),
 
