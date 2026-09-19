@@ -24,6 +24,18 @@ func newSuiteTools(cfg *axiom.Config) *suiteTools {
 	}
 }
 
+func (t *suiteTools) FilesClient() *grpcclients.FilesClient {
+	return grpcfixtures.GetFilesClientFixture(t.cfg)
+}
+
+func (t *suiteTools) CoursesClient() *grpcclients.CoursesClient {
+	return grpcfixtures.GetCoursesClientFixture(t.cfg)
+}
+
+func (t *suiteTools) ExercisesClient() *grpcclients.ExercisesClient {
+	return grpcfixtures.GetExercisesClientFixture(t.cfg)
+}
+
 func (t *suiteTools) PublicUsersClient() *grpcclients.UsersClient {
 	return grpcfixtures.GetPublicUsersClientFixture(t.cfg)
 }
@@ -36,18 +48,20 @@ func (t *suiteTools) AuthenticationClient() *grpcclients.AuthenticationClient {
 	return grpcfixtures.GetAuthenticationClientFixture(t.cfg)
 }
 
-func (t *suiteTools) FilesClient() *grpcclients.FilesClient {
-	return grpcfixtures.GetFilesClientFixture(t.cfg)
-}
-func (t *suiteTools) CoursesClient() *grpcclients.CoursesClient {
-	return grpcfixtures.GetCoursesClientFixture(t.cfg)
-}
-func (t *suiteTools) ExercisesClient() *grpcclients.ExercisesClient {
-	return grpcfixtures.GetExercisesClientFixture(t.cfg)
-}
-
 func (t *suiteTools) User() grpcfixtures.UserFixture {
 	return grpcfixtures.GetUserFixture(t.cfg)
+}
+
+func (t *suiteTools) File() grpcfixtures.FileFixture {
+	return grpcfixtures.GetFileFixture(t.cfg)
+}
+
+func (t *suiteTools) Course() grpcfixtures.CourseFixture {
+	return grpcfixtures.GetCourseFixture(t.cfg)
+}
+
+func (t *suiteTools) Exercise() grpcfixtures.ExerciseFixture {
+	return grpcfixtures.GetExerciseFixture(t.cfg)
 }
 
 var suiteToolset = axiom.NewToolset("grpc.tools", newSuiteTools)
