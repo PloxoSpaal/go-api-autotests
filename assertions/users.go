@@ -47,16 +47,16 @@ func (a *Assertion) HTTPUpdateUserResponse(actual models.UserResponse, expected 
 func (a *Assertion) HTTPUserUpdated(actual models.User, expected builders.UserUpdate) {
 	a.cfg.Step("Check updated HTTP user", func() {
 		if &expected.Email != nil {
-			a.Equal(actual.Email, &expected.Email, "user email")
+			a.Equal(actual.Email, expected.Email, "user email")
 		}
 		if &expected.LastName != nil {
-			a.Equal(actual.LastName, &expected.LastName, "user last name")
+			a.Equal(actual.LastName, expected.LastName, "user last name")
 		}
 		if &expected.FirstName != nil {
-			a.Equal(actual.FirstName, &expected.FirstName, "user first name")
+			a.Equal(actual.FirstName, expected.FirstName, "user first name")
 		}
 		if &expected.MiddleName != nil {
-			a.Equal(actual.MiddleName, &expected.MiddleName, "user middle name")
+			a.Equal(actual.MiddleName, expected.MiddleName, "user middle name")
 		}
 	})
 }
@@ -111,16 +111,16 @@ func (a *Assertion) GRPCUserUpdated(actual *v1.User, expected builders.UserUpdat
 		a.NotNil(actual, "user")
 
 		if &expected.Email != nil {
-			a.Equal(actual.GetEmail(), &expected.Email, "user email")
+			a.Equal(actual.GetEmail(), expected.Email, "user email")
 		}
 		if &expected.LastName != nil {
-			a.Equal(actual.GetLastName(), &expected.LastName, "user last name")
+			a.Equal(actual.GetLastName(), expected.LastName, "user last name")
 		}
 		if &expected.FirstName != nil {
-			a.Equal(actual.GetFirstName(), &expected.FirstName, "user first name")
+			a.Equal(actual.GetFirstName(), expected.FirstName, "user first name")
 		}
 		if &expected.MiddleName != nil {
-			a.Equal(actual.GetMiddleName(), &expected.MiddleName, "user middle name")
+			a.Equal(actual.GetMiddleName(), expected.MiddleName, "user middle name")
 		}
 	})
 }

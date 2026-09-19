@@ -1,12 +1,10 @@
 package httpfixtures
 
 import (
-	"net/http"
-
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/clients/httpclients"
+	"github.com/PloxoSpaal/go-api-autotests/fixtures"
 	"github.com/PloxoSpaal/go-api-autotests/models"
-	"github.com/stretchr/testify/require"
 )
 
 const SessionFixtureKey = "http-session"
@@ -17,6 +15,7 @@ type SessionFixture struct {
 }
 
 func SetSessionFixture(cfg *axiom.Config) (any, func(), error) {
+	assertion := fixtures.GetAssertionFixture(cfg)
 	userFixture := GetUserFixture(cfg)
 	authenticationClient := GetAuthenticationClientFixture(cfg)
 
@@ -30,10 +29,8 @@ func SetSessionFixture(cfg *axiom.Config) (any, func(), error) {
 	cfg.Setup("Log in fixture user", func() {
 		var err error
 		fixture.Response, err = authenticationClient.Login(cfg.Context.Raw, fixture.Request)
-		require.NoError(cfg.T(), err)
-		require.Equal(cfg.T(), http.StatusOK, fixture.Response.StatusCode)
-		require.NotEmpty(cfg.T(), fixture.Response.Data.Token.AccessToken)
-		require.NotEmpty(cfg.T(), fixture.Response.Data.Token.RefreshToken)
+		assertion.HTTPOK(fixture.Response.StatusCode, err)
+		assertion.HTTPLoginResponse(fixture.Response.Data)
 	})
 
 	return fixture, nil, nil
