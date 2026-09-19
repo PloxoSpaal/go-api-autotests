@@ -1,14 +1,12 @@
 package httpfixtures
 
 import (
-	"net/http"
-
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/clients/httpclients"
+	"github.com/PloxoSpaal/go-api-autotests/fixtures"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
-	"github.com/stretchr/testify/require"
 )
 
 const CourseFixtureKey = "http-course"
@@ -21,6 +19,7 @@ type CourseFixture struct {
 
 func SetCourseFixture(cfg *axiom.Config) (any, func(), error) {
 	builder := resources.GetBuilderResource(cfg.Runner)
+	assertion := fixtures.GetAssertionFixture(cfg)
 	coursesClient := GetCoursesClientFixture(cfg)
 
 	userFixture := GetUserFixture(cfg)
@@ -37,9 +36,8 @@ func SetCourseFixture(cfg *axiom.Config) (any, func(), error) {
 
 		var err error
 		fixture.Response, err = coursesClient.Create(cfg.Context.Raw, fixture.Request)
-		require.NoError(cfg.T(), err)
-		require.Equal(cfg.T(), http.StatusOK, fixture.Response.StatusCode)
-		require.NotEmpty(cfg.T(), fixture.Response.Data.Course.ID)
+		assertion.HTTPOK(fixture.Response.StatusCode, err)
+		assertion.HTTPCreateCourseResponse(fixture.Response.Data, fixture.Data)
 	})
 
 	return fixture, nil, nil

@@ -1,14 +1,12 @@
 package httpfixtures
 
 import (
-	"net/http"
-
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/clients/httpclients"
+	"github.com/PloxoSpaal/go-api-autotests/fixtures"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
-	"github.com/stretchr/testify/require"
 )
 
 const ExerciseFixtureKey = "http-exercise"
@@ -21,6 +19,7 @@ type ExerciseFixture struct {
 
 func SetExerciseFixture(cfg *axiom.Config) (any, func(), error) {
 	builder := resources.GetBuilderResource(cfg.Runner)
+	assertion := fixtures.GetAssertionFixture(cfg)
 	exercisesClient := GetExercisesClientFixture(cfg)
 	courseFixture := GetCourseFixture(cfg)
 
@@ -34,9 +33,8 @@ func SetExerciseFixture(cfg *axiom.Config) (any, func(), error) {
 
 		var err error
 		fixture.Response, err = exercisesClient.Create(cfg.Context.Raw, fixture.Request)
-		require.NoError(cfg.T(), err)
-		require.Equal(cfg.T(), http.StatusOK, fixture.Response.StatusCode)
-		require.NotEmpty(cfg.T(), fixture.Response.Data.Exercise.Id)
+		assertion.HTTPOK(fixture.Response.StatusCode, err)
+		assertion.HTTPCreateExerciseResponse(fixture.Response.Data, fixture.Data)
 	})
 
 	return fixture, nil, nil

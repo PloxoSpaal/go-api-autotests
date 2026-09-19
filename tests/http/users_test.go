@@ -1,12 +1,8 @@
 package http
 
 import (
-	"net/http"
-
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func (s *suite) TestCreateUser() {
@@ -65,15 +61,8 @@ func (s *suite) TestGetUserMe() {
 		userFixture := tools.User()
 
 		response, err := tools.PrivateUsersClient().GetMe(cfg.Context.Raw)
-		require.NoError(cfg.T(), err)
-		require.Equal(cfg.T(), http.StatusOK, response.StatusCode)
 
-		assert.Equal(cfg.T(), userFixture.Response.Data.User.ID, response.Data.User.ID)
-		assert.Equal(cfg.T(), userFixture.Response.Data.User.Email, response.Data.User.Email)
-		assert.Equal(cfg.T(), userFixture.Response.Data.User.LastName, response.Data.User.LastName)
-		assert.Equal(cfg.T(), userFixture.Response.Data.User.FirstName, response.Data.User.FirstName)
-		assert.Equal(cfg.T(), userFixture.Response.Data.User.MiddleName, response.Data.User.MiddleName)
-
-		cfg.T().Logf("received current user with ID %s", response.Data.User.ID)
+		tools.Assertion.HTTPOK(response.StatusCode, err)
+		tools.Assertion.HTTPGetUserResponse(response.Data, userFixture.Response.Data)
 	}))
 }
