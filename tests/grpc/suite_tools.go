@@ -2,9 +2,11 @@ package grpc
 
 import (
 	"github.com/Nikita-Filonov/axiom"
+	"github.com/PloxoSpaal/go-api-autotests/assertions"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/clients/grpcclients"
 	"github.com/PloxoSpaal/go-api-autotests/fake"
+	"github.com/PloxoSpaal/go-api-autotests/fixtures"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures/grpcfixtures"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
 )
@@ -12,15 +14,17 @@ import (
 type suiteTools struct {
 	cfg *axiom.Config
 
-	Fake    *fake.Fake
-	Builder *builders.Builder
+	Fake      *fake.Fake
+	Builder   *builders.Builder
+	Assertion *assertions.Assertion
 }
 
 func newSuiteTools(cfg *axiom.Config) *suiteTools {
 	return &suiteTools{
-		cfg:     cfg,
-		Fake:    resources.GetFakeResource(cfg.Runner),
-		Builder: resources.GetBuilderResource(cfg.Runner),
+		cfg:       cfg,
+		Fake:      resources.GetFakeResource(cfg.Runner),
+		Builder:   resources.GetBuilderResource(cfg.Runner),
+		Assertion: fixtures.GetAssertionFixture(cfg),
 	}
 }
 

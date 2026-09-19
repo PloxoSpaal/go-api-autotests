@@ -18,21 +18,14 @@ func (s *suite) TestCreateUser() {
 	)
 
 	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
-		user := tools.Builder.UserCreate()
-		request := user.GRPCRequest()
+		create := tools.Builder.UserCreate()
+		response, err := tools.PublicUsersClient().Create(
+			cfg.Context.Raw,
+			create.GRPCRequest(),
+		)
 
-		response, err := tools.PublicUsersClient().Create(cfg.Context.Raw, request)
-		require.NoError(cfg.T(), err)
-		require.NotNil(cfg.T(), response)
-		require.NotNil(cfg.T(), response.GetUser())
-		require.NotEmpty(cfg.T(), response.GetUser().GetId())
-
-		assert.Equal(cfg.T(), request.GetEmail(), response.GetUser().GetEmail())
-		assert.Equal(cfg.T(), request.GetLastName(), response.GetUser().GetLastName())
-		assert.Equal(cfg.T(), request.GetFirstName(), response.GetUser().GetFirstName())
-		assert.Equal(cfg.T(), request.GetMiddleName(), response.GetUser().GetMiddleName())
-
-		cfg.T().Logf("created user with ID %s", response.GetUser().GetId())
+		tools.Assertion.NoError(err)
+		tools.Assertion.GRPCCreateUserResponse(response, create)
 	}))
 }
 
@@ -47,22 +40,14 @@ func (s *suite) TestUpdateUser() {
 
 	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
 		userFixture := tools.User()
-
 		update := tools.Builder.UserUpdate()
-		request := update.GRPCRequest(userFixture.Response.GetUser().GetId())
+		response, err := tools.PrivateUsersClient().Update(
+			cfg.Context.Raw,
+			update.GRPCRequest(userFixture.Response.GetUser().GetId()),
+		)
 
-		response, err := tools.PrivateUsersClient().Update(cfg.Context.Raw, request)
-		require.NoError(cfg.T(), err)
-		require.NotNil(cfg.T(), response)
-		require.NotNil(cfg.T(), response.GetUser())
-
-		assert.Equal(cfg.T(), userFixture.Response.GetUser().GetId(), response.GetUser().GetId())
-		assert.Equal(cfg.T(), request.GetEmail(), response.GetUser().GetEmail())
-		assert.Equal(cfg.T(), request.GetLastName(), response.GetUser().GetLastName())
-		assert.Equal(cfg.T(), request.GetFirstName(), response.GetUser().GetFirstName())
-		assert.Equal(cfg.T(), request.GetMiddleName(), response.GetUser().GetMiddleName())
-
-		cfg.T().Logf("updated user with ID %s", response.GetUser().GetId())
+		tools.Assertion.NoError(err)
+		tools.Assertion.GRPCUpdateUserResponse(response, update)
 	}))
 }
 
@@ -80,7 +65,6 @@ func (s *suite) TestGetUserMe() {
 		userFixture := tools.User()
 
 		response, err := tools.PrivateUsersClient().GetMe(cfg.Context.Raw)
-
 		require.NoError(cfg.T(), err)
 		require.NotNil(cfg.T(), response)
 		require.NotNil(cfg.T(), response.GetUser())
