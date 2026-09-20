@@ -2,6 +2,7 @@ package assertions
 
 import (
 	"github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
+	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 )
@@ -10,13 +11,17 @@ func (a *Assertion) HTTPCreateCourseResponse(
 	actual models.CourseResponse,
 	expected builders.CourseCreate,
 ) {
-	a.cfg.Step("Check create HTTP course response", func() {
+	message := "Check create HTTP course response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPCourseCreated(actual.Course, expected)
 	})
 }
 
 func (a *Assertion) HTTPCourseCreated(actual models.Course, expected builders.CourseCreate) {
-	a.cfg.Step("Check created HTTP course", func() {
+	message := "Check created HTTP course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotEmpty(actual.ID, "course ID")
 		a.NotNil(actual.MaxScore, "course max score")
 		a.NotNil(actual.MinScore, "course min score")
@@ -35,13 +40,17 @@ func (a *Assertion) HTTPGetCourseResponse(
 	actual models.CourseResponse,
 	expected models.CourseResponse,
 ) {
-	a.cfg.Step("Check get HTTP course response", func() {
+	message := "Check get HTTP course response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPCourse(actual.Course, expected.Course)
 	})
 }
 
 func (a *Assertion) HTTPCourse(actual, expected models.Course) {
-	a.cfg.Step("Check HTTP course", func() {
+	message := "Check HTTP course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual.MaxScore, "actual course max score")
 		a.NotNil(expected.MaxScore, "expected course max score")
 		a.NotNil(actual.MinScore, "actual course min score")
@@ -63,13 +72,17 @@ func (a *Assertion) HTTPUpdateCourseResponse(
 	actual models.CourseResponse,
 	expected builders.CourseUpdate,
 ) {
-	a.cfg.Step("Check update HTTP course response", func() {
+	message := "Check update HTTP course response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPCourseUpdated(actual.Course, expected)
 	})
 }
 
 func (a *Assertion) HTTPCourseUpdated(actual models.Course, expected builders.CourseUpdate) {
-	a.cfg.Step("Check updated HTTP course", func() {
+	message := "Check updated HTTP course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual.MaxScore, "course max score")
 		a.NotNil(actual.MinScore, "course min score")
 		a.NotNil(actual.EstimatedTime, "course estimated time")
@@ -85,13 +98,17 @@ func (a *Assertion) HTTPListCoursesResponse(
 	actual models.CoursesResponse,
 	expected models.CourseResponse,
 ) {
-	a.cfg.Step("Check list HTTP courses response", func() {
+	message := "Check list HTTP courses response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPCoursesContain(actual.Courses, expected.Course)
 	})
 }
 
 func (a *Assertion) HTTPCoursesContain(actual []models.Course, expected models.Course) {
-	a.cfg.Step("Check HTTP courses contain expected course", func() {
+	message := "Check HTTP courses contain expected course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		for _, course := range actual {
 			if course.ID == expected.ID {
 				a.HTTPCourse(course, expected)
@@ -104,14 +121,18 @@ func (a *Assertion) HTTPCoursesContain(actual []models.Course, expected models.C
 }
 
 func (a *Assertion) GRPCCreateCourseResponse(actual *v1.GetCourseResponse, expected builders.CourseCreate) {
-	a.cfg.Step("Check create gRPC course response", func() {
+	message := "Check create gRPC course response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "create course response")
 		a.GRPCCourseCreated(actual.GetCourse(), expected)
 	})
 }
 
 func (a *Assertion) GRPCCourseCreated(actual *v1.Course, expected builders.CourseCreate) {
-	a.cfg.Step("Check created gRPC course", func() {
+	message := "Check created gRPC course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "course")
 		a.NotEmpty(actual.GetId(), "course ID")
 		a.NotNil(actual.MaxScore, "course max score")
@@ -128,7 +149,9 @@ func (a *Assertion) GRPCCourseCreated(actual *v1.Course, expected builders.Cours
 }
 
 func (a *Assertion) GRPCGetCourseResponse(actual, expected *v1.GetCourseResponse) {
-	a.cfg.Step("Check get gRPC course response", func() {
+	message := "Check get gRPC course response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "actual get course response")
 		a.NotNil(expected, "expected get course response")
 		a.GRPCCourse(actual.GetCourse(), expected.GetCourse())
@@ -136,7 +159,9 @@ func (a *Assertion) GRPCGetCourseResponse(actual, expected *v1.GetCourseResponse
 }
 
 func (a *Assertion) GRPCCourse(actual, expected *v1.Course) {
-	a.cfg.Step("Check gRPC course", func() {
+	message := "Check gRPC course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "actual course")
 		a.NotNil(expected, "expected course")
 		a.NotNil(actual.MaxScore, "actual course max score")
@@ -157,14 +182,18 @@ func (a *Assertion) GRPCCourse(actual, expected *v1.Course) {
 }
 
 func (a *Assertion) GRPCUpdateCourseResponse(actual *v1.GetCourseResponse, expected builders.CourseUpdate) {
-	a.cfg.Step("Check update gRPC course response", func() {
+	message := "Check update gRPC course response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "update course response")
 		a.GRPCCourseUpdated(actual.GetCourse(), expected)
 	})
 }
 
 func (a *Assertion) GRPCCourseUpdated(actual *v1.Course, expected builders.CourseUpdate) {
-	a.cfg.Step("Check updated gRPC course", func() {
+	message := "Check updated gRPC course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "course")
 		a.NotNil(actual.MaxScore, "course max score")
 		a.NotNil(actual.MinScore, "course min score")
@@ -178,7 +207,9 @@ func (a *Assertion) GRPCCourseUpdated(actual *v1.Course, expected builders.Cours
 }
 
 func (a *Assertion) GRPCListCoursesResponse(actual *v1.ListCoursesResponse, expected *v1.GetCourseResponse) {
-	a.cfg.Step("Check list gRPC courses response", func() {
+	message := "Check list gRPC courses response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "list courses response")
 		a.NotNil(expected, "expected course response")
 		a.GRPCCoursesContain(actual.GetCourses(), expected.GetCourse())
@@ -186,7 +217,9 @@ func (a *Assertion) GRPCListCoursesResponse(actual *v1.ListCoursesResponse, expe
 }
 
 func (a *Assertion) GRPCCoursesContain(actual []*v1.Course, expected *v1.Course) {
-	a.cfg.Step("Check gRPC courses contain expected course", func() {
+	message := "Check gRPC courses contain expected course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		for _, course := range actual {
 			if course.GetId() == expected.GetId() {
 				a.GRPCCourse(course, expected)

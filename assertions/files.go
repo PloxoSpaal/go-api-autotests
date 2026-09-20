@@ -2,18 +2,23 @@ package assertions
 
 import (
 	"github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
+	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 )
 
 func (a *Assertion) HTTPCreateFileResponse(actual models.FileResponse, expected builders.FileCreate) {
-	a.cfg.Step("Check create HTTP file response", func() {
+	message := "Check create HTTP file response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPFileCreated(actual.File, expected)
 	})
 }
 
 func (a *Assertion) HTTPFileCreated(actual models.File, expected builders.FileCreate) {
-	a.cfg.Step("Check created HTTP file", func() {
+	message := "Check created HTTP file"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotEmpty(actual.ID, "file ID")
 		a.Equal(actual.Filename, expected.Filename, "filename")
 		a.Equal(actual.Directory, expected.Directory, "file directory")
@@ -22,13 +27,17 @@ func (a *Assertion) HTTPFileCreated(actual models.File, expected builders.FileCr
 }
 
 func (a *Assertion) HTTPGetFileResponse(actual, expected models.FileResponse) {
-	a.cfg.Step("Check get HTTP file response", func() {
+	message := "Check get HTTP file response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPFile(actual.File, expected.File)
 	})
 }
 
 func (a *Assertion) HTTPFile(actual, expected models.File) {
-	a.cfg.Step("Check HTTP file", func() {
+	message := "Check HTTP file"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.Equal(actual.ID, expected.ID, "file ID")
 		a.Equal(actual.Filename, expected.Filename, "filename")
 		a.Equal(actual.Directory, expected.Directory, "file directory")
@@ -37,14 +46,18 @@ func (a *Assertion) HTTPFile(actual, expected models.File) {
 }
 
 func (a *Assertion) GRPCCreateFileResponse(actual *v1.GetFileResponse, expected builders.FileCreate) {
-	a.cfg.Step("Check create gRPC file response", func() {
+	message := "Check create gRPC file response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "create file response")
 		a.GRPCFileCreated(actual.GetFile(), expected)
 	})
 }
 
 func (a *Assertion) GRPCFileCreated(actual *v1.File, expected builders.FileCreate) {
-	a.cfg.Step("Check created gRPC file", func() {
+	message := "Check created gRPC file"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "file")
 		a.NotEmpty(actual.GetId(), "file ID")
 		a.Equal(actual.GetFilename(), expected.Filename, "filename")
@@ -54,7 +67,9 @@ func (a *Assertion) GRPCFileCreated(actual *v1.File, expected builders.FileCreat
 }
 
 func (a *Assertion) GRPCGetFileResponse(actual, expected *v1.GetFileResponse) {
-	a.cfg.Step("Check get gRPC file response", func() {
+	message := "Check get gRPC file response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "actual get file response")
 		a.NotNil(expected, "expected get file response")
 		a.GRPCFile(actual.GetFile(), expected.GetFile())
@@ -62,7 +77,9 @@ func (a *Assertion) GRPCGetFileResponse(actual, expected *v1.GetFileResponse) {
 }
 
 func (a *Assertion) GRPCFile(actual, expected *v1.File) {
-	a.cfg.Step("Check gRPC file", func() {
+	message := "Check gRPC file"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "actual file")
 		a.NotNil(expected, "expected file")
 		a.Equal(actual.GetId(), expected.GetId(), "file ID")

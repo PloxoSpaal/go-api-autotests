@@ -2,6 +2,7 @@ package assertions
 
 import (
 	v1 "github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
+	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 )
@@ -10,13 +11,17 @@ func (a *Assertion) HTTPCreateExerciseResponse(
 	actual models.ExerciseResponse,
 	expected builders.ExerciseCreate,
 ) {
-	a.cfg.Step("Check create HTTP exercise response", func() {
+	message := "Check create HTTP exercise response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPExerciseCreated(actual.Exercise, expected)
 	})
 }
 
 func (a *Assertion) HTTPExerciseCreated(actual models.Exercise, expected builders.ExerciseCreate) {
-	a.cfg.Step("Check created HTTP exercise", func() {
+	message := "Check created HTTP exercise"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotEmpty(actual.Id, "exercise ID")
 		a.NotNil(actual.MaxScore, "exercise max score")
 		a.NotNil(actual.MinScore, "exercise min score")
@@ -35,13 +40,17 @@ func (a *Assertion) HTTPGetExerciseResponse(
 	actual models.ExerciseResponse,
 	expected models.ExerciseResponse,
 ) {
-	a.cfg.Step("Check get HTTP exercise response", func() {
+	message := "Check get HTTP exercise response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPExercise(actual.Exercise, expected.Exercise)
 	})
 }
 
 func (a *Assertion) HTTPExercise(actual, expected models.Exercise) {
-	a.cfg.Step("Check HTTP exercise", func() {
+	message := "Check HTTP exercise"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(expected.MaxScore, "expected exercise max score")
 		a.NotNil(actual.MaxScore, "actual exercise max score")
 		a.NotNil(expected.MinScore, "expected exercise min score")
@@ -63,13 +72,17 @@ func (a *Assertion) HTTPUpdateExerciseResponse(
 	actual models.ExerciseResponse,
 	expected builders.ExerciseUpdate,
 ) {
-	a.cfg.Step("Check update HTTP exercise response", func() {
+	message := "Check update HTTP exercise response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPExerciseUpdated(actual.Exercise, expected)
 	})
 }
 
 func (a *Assertion) HTTPExerciseUpdated(actual models.Exercise, expected builders.ExerciseUpdate) {
-	a.cfg.Step("Check updated HTTP exercise", func() {
+	message := "Check updated HTTP exercise"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual.MaxScore, "exercise max score")
 		a.NotNil(actual.MinScore, "exercise min score")
 		a.NotNil(actual.EstimatedTime, "exercise estimated time")
@@ -86,13 +99,17 @@ func (a *Assertion) HTTPListExercisesResponse(
 	actual models.ExercisesResponse,
 	expected models.ExerciseResponse,
 ) {
-	a.cfg.Step("Check list HTTP exercises response", func() {
+	message := "Check list HTTP exercises response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPExercisesContain(actual.Exercises, expected.Exercise)
 	})
 }
 
 func (a *Assertion) HTTPExercisesContain(actual []models.Exercise, expected models.Exercise) {
-	a.cfg.Step("Check HTTP exercises contain expected course", func() {
+	message := "Check HTTP exercises contain expected course"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		for _, exercise := range actual {
 			if exercise.Id == expected.Id {
 				a.HTTPExercise(exercise, expected)
@@ -108,7 +125,9 @@ func (a *Assertion) GRPCCreateExerciseResponse(
 	actual *v1.GetExerciseResponse,
 	expected builders.ExerciseCreate,
 ) {
-	a.cfg.Step("Check create gRPC exercise response", func() {
+	message := "Check create gRPC exercise response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "create exercise response")
 		a.GRPCExerciseCreated(actual.GetExercise(), expected)
 	})
@@ -118,7 +137,9 @@ func (a *Assertion) GRPCExerciseCreated(
 	actual *v1.Exercise,
 	expected builders.ExerciseCreate,
 ) {
-	a.cfg.Step("Check created gRPC exercise", func() {
+	message := "Check created gRPC exercise"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "exercise")
 		a.NotEmpty(actual.GetId(), "exercise Id")
 		a.NotNil(actual.MaxScore, "exercise max score")
@@ -138,7 +159,9 @@ func (a *Assertion) GRPCGetExerciseResponse(
 	actual *v1.GetExerciseResponse,
 	expected *v1.GetExerciseResponse,
 ) {
-	a.cfg.Step("Check get gRPC exercise response", func() {
+	message := "Check get gRPC exercise response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "actual get exercise response")
 		a.NotNil(expected, "expected get exercise response")
 		a.GRPCExercise(actual.GetExercise(), expected.GetExercise())
@@ -149,7 +172,9 @@ func (a *Assertion) GRPCExercise(
 	actual *v1.Exercise,
 	expected *v1.Exercise,
 ) {
-	a.cfg.Step("Check gRPC exercise", func() {
+	message := "Check gRPC exercise"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "actual exercise")
 		a.NotNil(expected, "expected exercise")
 		a.NotNil(actual.MaxScore, "actual exercise max score")
@@ -173,7 +198,9 @@ func (a *Assertion) GRPCUpdateExerciseResponse(
 	actual *v1.GetExerciseResponse,
 	expected builders.ExerciseUpdate,
 ) {
-	a.cfg.Step("Check update gRPC exercise response", func() {
+	message := "Check update gRPC exercise response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "update exercise response")
 		a.NotNil(actual.GetExercise(), "exercise")
 		a.GRPCExerciseUpdated(actual.GetExercise(), expected)
@@ -184,7 +211,9 @@ func (a *Assertion) GRPCExerciseUpdated(
 	actual *v1.Exercise,
 	expected builders.ExerciseUpdate,
 ) {
-	a.cfg.Step("Check updated gRPC exercise", func() {
+	message := "Check updated gRPC exercise"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "exercise")
 		a.NotNil(actual.MaxScore, "exercise max score")
 		a.NotNil(actual.MinScore, "exercise min score")
@@ -202,7 +231,9 @@ func (a *Assertion) GRPCListExercisesResponse(
 	actual *v1.ListExercisesResponse,
 	expected *v1.GetExerciseResponse,
 ) {
-	a.cfg.Step("Check list gRPC exercises response", func() {
+	message := "Check list gRPC exercises response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "list exercises response")
 		a.NotNil(expected, "expected exercise response")
 		a.GRPCExercisesContain(actual.GetExercises(), expected.GetExercise())
@@ -213,7 +244,9 @@ func (a *Assertion) GRPCExercisesContain(
 	actual []*v1.Exercise,
 	expected *v1.Exercise,
 ) {
-	a.cfg.Step("Check gRPC exercises contain expected exercise", func() {
+	message := "Check gRPC exercises contain expected exercise"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		for _, exercise := range actual {
 			if exercise.GetId() == expected.GetId() {
 				a.GRPCExercise(exercise, expected)
