@@ -8,6 +8,7 @@ import (
 
 func (s *suite) TestLogin() {
 	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-AUTHENTICATION-001"),
 		axiom.WithCaseName("login with correct email and password"),
 		axiom.WithCaseMeta(
 			axiom.WithMetaTag(metadata.TagSmoke),

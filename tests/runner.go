@@ -2,8 +2,10 @@ package tests
 
 import (
 	"github.com/Nikita-Filonov/axiom"
+	"github.com/Nikita-Filonov/axiom/plugins/testlogger"
 	"github.com/PloxoSpaal/go-api-autotests/fixtures"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
+	"github.com/PloxoSpaal/go-api-autotests/plugins"
 	"github.com/PloxoSpaal/go-api-autotests/resources"
 )
 
@@ -13,6 +15,8 @@ var Runner = axiom.NewRunner(
 		axiom.WithMetaEpic(metadata.EpicAPI),
 		axiom.WithMetaLayer(metadata.LayerE2E),
 	),
+
+	axiom.WithRunnerPlugins(plugins.Allure(), testlogger.Plugin()),
 
 	axiom.WithRunnerResource(resources.ConfigResourceKey, resources.SetConfigResource),
 	axiom.WithRunnerResource(resources.FakeResourceKey, resources.SetFakeResource),

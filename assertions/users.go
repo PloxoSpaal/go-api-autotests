@@ -2,18 +2,23 @@ package assertions
 
 import (
 	"github.com/Nikita-Filonov/api-go-autotests-server/gen/go/v1"
+	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/models"
 )
 
 func (a *Assertion) HTTPCreateUserResponse(actual models.UserResponse, expected builders.UserCreate) {
-	a.cfg.Step("Check create HTTP user response", func() {
+	message := "Check create HTTP user response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPUserCreated(actual.User, expected)
 	})
 }
 
 func (a *Assertion) HTTPUserCreated(actual models.User, expected builders.UserCreate) {
-	a.cfg.Step("Check created HTTP user", func() {
+	message := "Check created HTTP user"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotEmpty(actual.ID, "user ID")
 		a.Equal(actual.Email, expected.Email, "user email")
 		a.Equal(actual.LastName, expected.LastName, "user last name")
@@ -22,14 +27,18 @@ func (a *Assertion) HTTPUserCreated(actual models.User, expected builders.UserCr
 	})
 }
 
-func (a *Assertion) HTTPGetUserResponse(actual models.UserResponse, expected models.UserResponse) {
-	a.cfg.Step("Check get HTTP user response", func() {
+func (a *Assertion) HTTPGetUserResponse(actual, expected models.UserResponse) {
+	message := "Check get HTTP user response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPUser(actual.User, expected.User)
 	})
 }
 
 func (a *Assertion) HTTPUser(actual, expected models.User) {
-	a.cfg.Step("Check HTTP user", func() {
+	message := "Check HTTP user"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.Equal(actual.ID, expected.ID, "user ID")
 		a.Equal(actual.Email, expected.Email, "user email")
 		a.Equal(actual.LastName, expected.LastName, "user last name")
@@ -39,13 +48,17 @@ func (a *Assertion) HTTPUser(actual, expected models.User) {
 }
 
 func (a *Assertion) HTTPUpdateUserResponse(actual models.UserResponse, expected builders.UserUpdate) {
-	a.cfg.Step("Check update HTTP user response", func() {
+	message := "Check update HTTP user response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.HTTPUserUpdated(actual.User, expected)
 	})
 }
 
 func (a *Assertion) HTTPUserUpdated(actual models.User, expected builders.UserUpdate) {
-	a.cfg.Step("Check updated HTTP user", func() {
+	message := "Check updated HTTP user"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		if &expected.Email != nil {
 			a.Equal(actual.Email, expected.Email, "user email")
 		}
@@ -62,14 +75,18 @@ func (a *Assertion) HTTPUserUpdated(actual models.User, expected builders.UserUp
 }
 
 func (a *Assertion) GRPCCreateUserResponse(actual *v1.GetUserResponse, expected builders.UserCreate) {
-	a.cfg.Step("Check create gRPC user response", func() {
+	message := "Check create gRPC user response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "create user response")
 		a.GRPCUserCreated(actual.GetUser(), expected)
 	})
 }
 
 func (a *Assertion) GRPCUserCreated(actual *v1.User, expected builders.UserCreate) {
-	a.cfg.Step("Check created gRPC user", func() {
+	message := "Check created gRPC user"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "user")
 		a.NotEmpty(actual.GetId(), "user ID")
 		a.Equal(actual.GetEmail(), expected.Email, "user email")
@@ -79,8 +96,10 @@ func (a *Assertion) GRPCUserCreated(actual *v1.User, expected builders.UserCreat
 	})
 }
 
-func (a *Assertion) GRPCGetUserResponse(actual *v1.GetUserResponse, expected *v1.GetUserResponse) {
-	a.cfg.Step("Check get gRPC user response", func() {
+func (a *Assertion) GRPCGetUserResponse(actual, expected *v1.GetUserResponse) {
+	message := "Check get gRPC user response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "actual get user response")
 		a.NotNil(expected, "expected get user response")
 		a.GRPCUser(actual.GetUser(), expected.GetUser())
@@ -88,7 +107,9 @@ func (a *Assertion) GRPCGetUserResponse(actual *v1.GetUserResponse, expected *v1
 }
 
 func (a *Assertion) GRPCUser(actual, expected *v1.User) {
-	a.cfg.Step("Check gRPC user", func() {
+	message := "Check gRPC user"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "actual user")
 		a.NotNil(expected, "expected user")
 		a.Equal(actual.GetId(), expected.GetId(), "user ID")
@@ -100,14 +121,18 @@ func (a *Assertion) GRPCUser(actual, expected *v1.User) {
 }
 
 func (a *Assertion) GRPCUpdateUserResponse(actual *v1.GetUserResponse, expected builders.UserUpdate) {
-	a.cfg.Step("Check update gRPC user response", func() {
+	message := "Check update gRPC user response"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "update user response")
 		a.GRPCUserUpdated(actual.GetUser(), expected)
 	})
 }
 
 func (a *Assertion) GRPCUserUpdated(actual *v1.User, expected builders.UserUpdate) {
-	a.cfg.Step("Check updated gRPC user", func() {
+	message := "Check updated gRPC user"
+	a.cfg.Step(message, func() {
+		a.cfg.Log(axiom.NewInfoLog(message))
 		a.NotNil(actual, "user")
 
 		if &expected.Email != nil {

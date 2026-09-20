@@ -7,6 +7,7 @@ import (
 
 func (s *suite) TestCreateUser() {
 	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-USERS-001"),
 		axiom.WithCaseName("create user"),
 		axiom.WithCaseMeta(
 			axiom.WithMetaTag(metadata.TagSmoke),
@@ -29,6 +30,7 @@ func (s *suite) TestCreateUser() {
 
 func (s *suite) TestUpdateUser() {
 	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-USERS-002"),
 		axiom.WithCaseName("update user"),
 		axiom.WithCaseMeta(
 			axiom.WithMetaStory(metadata.StoryUpdateEntity),
@@ -51,6 +53,7 @@ func (s *suite) TestUpdateUser() {
 
 func (s *suite) TestGetUserMe() {
 	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-USERS-003"),
 		axiom.WithCaseName("get user me"),
 		axiom.WithCaseMeta(
 			axiom.WithMetaTag(metadata.TagSmoke),
