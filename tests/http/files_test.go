@@ -34,3 +34,26 @@ func (s *suite) TestDeleteFile() {
 		tools.Assertion.HTTPError(getResponse.APIError, "File not found")
 	}))
 }
+
+func (s *suite) TestCreateFile() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-FILES-002"),
+		axiom.WithCaseName("create file"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryCreateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityBlocker),
+			axiom.WithMetaTag(metadata.TagSmoke),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		fileData := tools.Builder.FileCreate()
+		createResponse, err := tools.FilesClient().Create(
+			cfg.Context.Raw,
+			fileData.HTTPRequest(),
+		)
+
+		tools.Assertion.HTTPOK(createResponse.StatusCode, err)
+		tools.Assertion.HTTPCreateFileResponse(createResponse.Data, fileData)
+	}))
+}
