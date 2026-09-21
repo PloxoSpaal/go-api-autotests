@@ -7,18 +7,17 @@ import (
 )
 
 func TestSuite(t *testing.T) {
-	testSuite := axiom.NewSuite(t, new(suite), axiom.WithSuiteConfigRunner(suiteRunner))
+	testSuite := axiom.NewSuiteFactory(
+		t,
+		func() *suite { return new(suite) },
+		axiom.WithSuiteConfigRunner(suiteRunner),
+		axiom.WithSuiteConfigParallel(),
+	)
 
 	testSuite.Test(
 		"TestCreateUser",
 		(*suite).TestCreateUser,
 		axiom.WithSuiteTestRunner(usersRunner),
-	)
-
-	testSuite.Test(
-		"TestLoginUser",
-		(*suite).TestLoginUser,
-		axiom.WithSuiteTestRunner(authenticationRunner),
 	)
 
 	testSuite.Test(
@@ -31,6 +30,24 @@ func TestSuite(t *testing.T) {
 		"TestGetUserMe",
 		(*suite).TestGetUserMe,
 		axiom.WithSuiteTestRunner(usersRunner),
+	)
+
+	testSuite.Test(
+		"TestLogin",
+		(*suite).TestLoginUser,
+		axiom.WithSuiteTestRunner(authenticationRunner),
+	)
+
+	testSuite.Test(
+		"TestLoginWithInvalidCredentials",
+		(*suite).TestLoginWithInvalidCredentials,
+		axiom.WithSuiteTestRunner(authenticationRunner),
+	)
+
+	testSuite.Test(
+		"TestDeleteFile",
+		(*suite).TestDeleteFile,
+		axiom.WithSuiteTestRunner(filesRunner),
 	)
 
 	testSuite.Run()

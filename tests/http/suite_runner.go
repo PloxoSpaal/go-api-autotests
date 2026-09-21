@@ -50,3 +50,12 @@ var authenticationRunner = suiteRunner.Join(
 		),
 	),
 )
+
+var filesRunner = suiteRunner.Join(
+	axiom.NewRunner(
+		axiom.WithRunnerMeta(
+			axiom.WithMetaTag(metadata.TagFiles),
+			axiom.WithMetaFeature(metadata.FeatureFiles),
+		),
+	),
+)

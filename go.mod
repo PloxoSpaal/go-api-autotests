@@ -6,6 +6,9 @@ require (
 	github.com/Nikita-Filonov/api-go-autotests-server v1.1.0
 	github.com/Nikita-Filonov/axiom v1.7.0
 	github.com/Nikita-Filonov/axiom/plugins/testallure v0.22.0
+	github.com/Nikita-Filonov/axiom/plugins/testlogger v0.18.0
+	github.com/Nikita-Filonov/axiom/plugins/testtags v0.19.0
+	github.com/allure-framework/allure-go/commons v1.2.1
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/go-resty/resty/v2 v2.17.0
 	github.com/stretchr/testify v1.11.1
@@ -15,8 +18,6 @@ require (
 )
 
 require (
-	github.com/Nikita-Filonov/axiom/plugins/testlogger v0.18.0 // indirect
-	github.com/allure-framework/allure-go/commons v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.48.0 // indirect

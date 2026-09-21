@@ -44,6 +44,10 @@ func (t *suiteTools) User() httpfixtures.UserFixture {
 	return httpfixtures.GetUserFixture(t.cfg)
 }
 
+func (t *suiteTools) File() httpfixtures.FileFixture {
+	return httpfixtures.GetFileFixture(t.cfg)
+}
+
 func (t *suiteTools) FilesClient() *httpclients.FilesClient {
 	return httpfixtures.GetFilesClientFixture(t.cfg)
 }
