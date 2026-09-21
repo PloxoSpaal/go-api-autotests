@@ -105,3 +105,23 @@ func (s *suite) TestUpdateCourseWithEmptyDescription() {
 		tools.Assertion.HTTPError(response.APIError, "description is required")
 	}))
 }
+
+func (s *suite) TestGetCourse() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-COURSES-005"),
+		axiom.WithCaseName("get course"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		course := tools.Course()
+		response, err := tools.CoursesClient().Get(cfg.Context.Raw, course.Response.Data.Course.ID)
+
+		tools.Assertion.HTTPOK(response.StatusCode, err)
+		tools.Assertion.HTTPGetCourseResponse(response.Data, course.Response.Data)
+	}))
+}

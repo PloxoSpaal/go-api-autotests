@@ -92,5 +92,11 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(coursesRunner),
 	)
 
+	testSuite.Test(
+		"TestGetCourse",
+		(*suite).TestGetCourse,
+		axiom.WithSuiteTestRunner(coursesRunner),
+	)
+
 	testSuite.Run()
 }
