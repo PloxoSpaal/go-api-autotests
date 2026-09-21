@@ -1,9 +1,9 @@
 package models
 
 type Exercise struct {
-	Id            int     `json:"id"`
+	Id            string  `json:"id"`
 	Title         string  `json:"title"`
-	CourseId      int     `json:"courseId"`
+	CourseId      string  `json:"courseId"`
 	MaxScore      *int    `json:"maxScore"`
 	MinScore      *int    `json:"minScore"`
 	OrderIndex    int     `json:"orderIndex"`
