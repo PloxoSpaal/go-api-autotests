@@ -36,5 +36,17 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(authenticationRunner),
 	)
 
+	testSuite.Test(
+		"TestLoginWithInvalidCredentials",
+		(*suite).TestLoginWithInvalidCredentials,
+		axiom.WithSuiteTestRunner(authenticationRunner),
+	)
+
+	testSuite.Test(
+		"TestDeleteFile",
+		(*suite).TestDeleteFile,
+		axiom.WithSuiteTestRunner(filesRunner),
+	)
+
 	testSuite.Run()
 }
