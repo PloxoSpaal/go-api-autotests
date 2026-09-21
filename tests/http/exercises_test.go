@@ -6,6 +6,7 @@ import (
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
+	"github.com/PloxoSpaal/go-api-autotests/models"
 )
 
 func (s *suite) TestCreateExercise() {
@@ -94,5 +95,28 @@ func (s *suite) TestDeleteExercise() {
 		tools.Assertion.NoError(err)
 		tools.Assertion.HTTPStatus(getResponse.StatusCode, http.StatusNotFound)
 		tools.Assertion.HTTPError(getResponse.APIError, "Exercise not found")
+	}))
+}
+
+func (s *suite) TestListExercises() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-EXERCISES-005"),
+		axiom.WithCaseName("list exercises"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryGetEntities),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		exercise := tools.Exercise()
+		query := models.ListExercisesQuery{
+			CourseId: exercise.Response.Data.Exercise.CourseId,
+		}
+		response, err := tools.ExercisesClient().List(cfg.Context.Raw, query)
+
+		tools.Assertion.HTTPOK(response.StatusCode, err)
+		tools.Assertion.HTTPListExercisesResponse(response.Data, exercise.Response.Data)
 	}))
 }
