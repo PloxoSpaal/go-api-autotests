@@ -58,3 +58,26 @@ func (s *suite) TestCreateCourseWithEmptyTitle() {
 		tools.Assertion.HTTPError(response.APIError, "title and description are required")
 	}))
 }
+
+func (s *suite) TestCreateCourse() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-COURSES-003"),
+		axiom.WithCaseName("create course"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryCreateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityBlocker),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		create := tools.Builder.CourseCreate(
+			builders.WithCourseCreatePreviewFileID(tools.File().Response.Data.File.ID),
+			builders.WithCourseCreateCreatedByUserID(tools.User().Response.Data.User.ID),
+		)
+		response, err := tools.CoursesClient().Create(cfg.Context.Raw, create.HTTPRequest())
+
+		tools.Assertion.HTTPOK(response.StatusCode, err)
+		tools.Assertion.HTTPCreateCourseResponse(response.Data, create)
+	}))
+}
