@@ -81,3 +81,25 @@ func (s *suite) TestCreateCourse() {
 		tools.Assertion.GRPCCreateCourseResponse(response, create)
 	}))
 }
+
+func (s *suite) TestUpdateCourseWithEmptyDescription() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-COURSES-004"),
+		axiom.WithCaseName("update course with empty description"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagNegative),
+			axiom.WithMetaStory(metadata.StoryValidateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		update := tools.Builder.CourseUpdate(builders.WithCourseUpdateDescription(""))
+		response, err := tools.CoursesClient().Update(
+			cfg.Context.Raw, update.GRPCRequest(tools.Course().Response.GetCourse().GetId()),
+		)
+
+		tools.Assertion.GRPCError(err, codes.InvalidArgument, "description is required")
+		tools.Assertion.Nil(response, "update course with empty description response")
+	}))
+}
