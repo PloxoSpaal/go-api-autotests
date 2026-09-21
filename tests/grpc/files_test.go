@@ -72,3 +72,23 @@ func (s *suite) TestGetFile() {
 		tools.Assertion.GRPCGetFileResponse(response, fileFixture.Response)
 	}))
 }
+
+func (s *suite) TestGetFileWithUnknownID() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-FILES-004"),
+		axiom.WithCaseName("get file with unknown id"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagNegative),
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		request := &v1.GetFileRequest{Id: tools.Fake.UUID()}
+		response, err := tools.FilesClient().Get(cfg.Context.Raw, request)
+
+		tools.Assertion.GRPCError(err, codes.NotFound, "File not found")
+		tools.Assertion.Nil(response, "get file with unknown id response")
+	}))
+}
