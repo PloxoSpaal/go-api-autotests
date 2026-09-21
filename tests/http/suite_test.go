@@ -140,5 +140,11 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(exercisesRunner),
 	)
 
+	testSuite.Test(
+		"TestGetExerciseWithUnknownID",
+		(*suite).TestGetExerciseWithUnknownID,
+		axiom.WithSuiteTestRunner(exercisesRunner),
+	)
+
 	testSuite.Run()
 }

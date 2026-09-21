@@ -146,3 +146,23 @@ func (s *suite) TestCreateExerciseWithInvalidScores() {
 		tools.Assertion.HTTPError(response.APIError, "max score should not be less than min score")
 	}))
 }
+
+func (s *suite) TestGetExerciseWithUnknownID() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-EXERCISES-007"),
+		axiom.WithCaseName("get exercise with unknown id"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagNegative),
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		response, err := tools.ExercisesClient().Get(cfg.Context.Raw, tools.Fake.UUID())
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.HTTPStatus(response.StatusCode, http.StatusNotFound)
+		tools.Assertion.HTTPError(response.APIError, "Exercise not found")
+	}))
+}
