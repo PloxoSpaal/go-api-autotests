@@ -125,3 +125,27 @@ func (s *suite) TestGetCourse() {
 		tools.Assertion.HTTPGetCourseResponse(response.Data, course.Response.Data)
 	}))
 }
+
+func (s *suite) TestDeleteCourse() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-COURSES-006"),
+		axiom.WithCaseName("delete course"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryDeleteEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		course := tools.Course()
+		response, err := tools.CoursesClient().Delete(cfg.Context.Raw, course.Response.Data.Course.ID)
+
+		tools.Assertion.HTTPOK(response.StatusCode, err)
+
+		getResponse, err := tools.CoursesClient().Get(cfg.Context.Raw, course.Response.Data.Course.ID)
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.HTTPStatus(getResponse.StatusCode, http.StatusNotFound)
+		tools.Assertion.HTTPError(getResponse.APIError, "Course not found")
+	}))
+}
