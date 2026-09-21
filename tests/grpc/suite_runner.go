@@ -59,3 +59,12 @@ var filesRunner = suiteRunner.Join(
 		),
 	),
 )
+
+var coursesRunner = suiteRunner.Join(
+	axiom.NewRunner(
+		axiom.WithRunnerMeta(
+			axiom.WithMetaTag(metadata.TagCourses),
+			axiom.WithMetaFeature(metadata.FeatureCourses),
+		),
+	),
+)

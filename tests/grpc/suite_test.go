@@ -66,5 +66,17 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(filesRunner),
 	)
 
+	testSuite.Test(
+		"TestListCourses",
+		(*suite).TestListCourses,
+		axiom.WithSuiteTestRunner(coursesRunner),
+	)
+
+	testSuite.Test(
+		"TestCreateCourseWithEmptyTitle",
+		(*suite).TestCreateCourseWithEmptyTitle,
+		axiom.WithSuiteTestRunner(coursesRunner),
+	)
+
 	testSuite.Run()
 }
