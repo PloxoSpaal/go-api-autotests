@@ -86,5 +86,11 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(coursesRunner),
 	)
 
+	testSuite.Test(
+		"TestUpdateCourseWithEmptyDescription",
+		(*suite).TestUpdateCourseWithEmptyDescription,
+		axiom.WithSuiteTestRunner(coursesRunner),
+	)
+
 	testSuite.Run()
 }
