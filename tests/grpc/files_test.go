@@ -31,3 +31,23 @@ func (s *suite) TestDeleteFile() {
 		tools.Assertion.Nil(getResponse, "gRPC response")
 	}))
 }
+
+func (s *suite) TestCreateFile() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-FILES-002"),
+		axiom.WithCaseName("create file"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryCreateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityBlocker),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		fileFixture := tools.Builder.FileCreate()
+		response, err := tools.FilesClient().Create(cfg.Context.Raw, fileFixture.GRPCRequest())
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.GRPCCreateFileResponse(response, fileFixture)
+	}))
+}
