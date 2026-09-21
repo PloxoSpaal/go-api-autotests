@@ -57,3 +57,26 @@ func (s *suite) TestCreateFile() {
 		tools.Assertion.HTTPCreateFileResponse(createResponse.Data, fileData)
 	}))
 }
+
+func (s *suite) TestGetFile() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-FILES-003"),
+		axiom.WithCaseName("get file"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+			axiom.WithMetaTag(metadata.TagSmoke),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		fileData := tools.File()
+		getResponse, err := tools.FilesClient().Get(
+			cfg.Context.Raw,
+			fileData.Response.Data.File.ID,
+		)
+
+		tools.Assertion.HTTPOK(getResponse.StatusCode, err)
+		tools.Assertion.HTTPGetFileResponse(getResponse.Data, fileData.Response.Data)
+	}))
+}
