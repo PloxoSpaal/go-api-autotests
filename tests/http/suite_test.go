@@ -62,5 +62,11 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(filesRunner),
 	)
 
+	testSuite.Test(
+		"TestGetFileWithUnknownID",
+		(*suite).TestGetFileWithUnknownID,
+		axiom.WithSuiteTestRunner(filesRunner),
+	)
+
 	testSuite.Run()
 }

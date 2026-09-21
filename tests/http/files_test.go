@@ -80,3 +80,26 @@ func (s *suite) TestGetFile() {
 		tools.Assertion.HTTPGetFileResponse(getResponse.Data, fileData.Response.Data)
 	}))
 }
+
+func (s *suite) TestGetFileWithUnknownID() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-FILES-004"),
+		axiom.WithCaseName("get file with unknown id"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+			axiom.WithMetaTag(metadata.TagNegative),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		response, err := tools.FilesClient().Get(
+			cfg.Context.Raw,
+			tools.Fake.UUID(),
+		)
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.HTTPStatus(response.StatusCode, http.StatusNotFound)
+		tools.Assertion.HTTPError(response.APIError, "File not found")
+	}))
+}
