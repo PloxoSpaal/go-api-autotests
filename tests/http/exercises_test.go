@@ -120,3 +120,29 @@ func (s *suite) TestListExercises() {
 		tools.Assertion.HTTPListExercisesResponse(response.Data, exercise.Response.Data)
 	}))
 }
+
+func (s *suite) TestCreateExerciseWithInvalidScores() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-EXERCISES-006"),
+		axiom.WithCaseName("create exercise with invalid scores"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagNegative),
+			axiom.WithMetaStory(metadata.StoryValidateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		course := tools.Course()
+		create := tools.Builder.ExerciseCreate(
+			builders.WithExerciseCreateCourseId(course.Response.Data.Course.ID),
+			builders.WithExerciseCreateMaxScore(10),
+			builders.WithExerciseCreateMinScore(100),
+		)
+		response, err := tools.ExercisesClient().Create(cfg.Context.Raw, create.HTTPRequest())
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.HTTPStatus(response.StatusCode, http.StatusUnprocessableEntity)
+		tools.Assertion.HTTPError(response.APIError, "max score should not be less than min score")
+	}))
+}
