@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
@@ -68,5 +70,29 @@ func (s *suite) TestUpdateExercise() {
 
 		tools.Assertion.HTTPOK(response.StatusCode, err)
 		tools.Assertion.HTTPUpdateExerciseResponse(response.Data, update)
+	}))
+}
+
+func (s *suite) TestDeleteExercise() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-EXERCISES-004"),
+		axiom.WithCaseName("delete exercise"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryDeleteEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		exerciseId := tools.Exercise().Response.Data.Exercise.Id
+		response, err := tools.ExercisesClient().Delete(cfg.Context.Raw, exerciseId)
+
+		tools.Assertion.HTTPOK(response.StatusCode, err)
+
+		getResponse, err := tools.ExercisesClient().Get(cfg.Context.Raw, exerciseId)
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.HTTPStatus(getResponse.StatusCode, http.StatusNotFound)
+		tools.Assertion.HTTPError(getResponse.APIError, "Exercise not found")
 	}))
 }
