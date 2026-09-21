@@ -48,6 +48,8 @@ func (t *suiteTools) File() httpfixtures.FileFixture {
 	return httpfixtures.GetFileFixture(t.cfg)
 }
 
+func (t *suiteTools) Course() httpfixtures.CourseFixture { return httpfixtures.GetCourseFixture(t.cfg) }
+
 func (t *suiteTools) FilesClient() *httpclients.FilesClient {
 	return httpfixtures.GetFilesClientFixture(t.cfg)
 }
