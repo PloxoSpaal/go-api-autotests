@@ -51,3 +51,24 @@ func (s *suite) TestCreateFile() {
 		tools.Assertion.GRPCCreateFileResponse(response, fileFixture)
 	}))
 }
+
+func (s *suite) TestGetFile() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-FILES-003"),
+		axiom.WithCaseName("get file"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		fileFixture := tools.File()
+		request := &v1.GetFileRequest{Id: fileFixture.Response.GetFile().GetId()}
+		response, err := tools.FilesClient().Get(cfg.Context.Raw, request)
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.GRPCGetFileResponse(response, fileFixture.Response)
+	}))
+}

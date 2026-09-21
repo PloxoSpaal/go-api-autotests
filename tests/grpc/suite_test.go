@@ -54,5 +54,11 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(filesRunner),
 	)
 
+	testSuite.Test(
+		"TestGetFile",
+		(*suite).TestGetFile,
+		axiom.WithSuiteTestRunner(filesRunner),
+	)
+
 	testSuite.Run()
 }
