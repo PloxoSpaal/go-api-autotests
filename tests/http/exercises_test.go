@@ -48,3 +48,25 @@ func (s *suite) TestGetExercise() {
 		tools.Assertion.HTTPGetExerciseResponse(response.Data, exercise.Response.Data)
 	}))
 }
+
+func (s *suite) TestUpdateExercise() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-EXERCISES-003"),
+		axiom.WithCaseName("update exercise"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryUpdateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		update := tools.Builder.ExerciseUpdate()
+		response, err := tools.ExercisesClient().Update(
+			cfg.Context.Raw, tools.Exercise().Response.Data.Exercise.Id, update.HTTPRequest(),
+		)
+
+		tools.Assertion.HTTPOK(response.StatusCode, err)
+		tools.Assertion.HTTPUpdateExerciseResponse(response.Data, update)
+	}))
+}
