@@ -56,3 +56,28 @@ func (s *suite) TestCreateCourseWithEmptyTitle() {
 		tools.Assertion.Nil(response, "gRPC response")
 	}))
 }
+
+func (s *suite) TestCreateCourse() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-COURSES-003"),
+		axiom.WithCaseName("create course"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryCreateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityBlocker),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		userFixture := tools.User()
+		fileFixture := tools.File()
+		create := tools.Builder.CourseCreate(
+			builders.WithCourseCreatePreviewFileID(fileFixture.Response.GetFile().GetId()),
+			builders.WithCourseCreateCreatedByUserID(userFixture.Response.GetUser().GetId()),
+		)
+		response, err := tools.CoursesClient().Create(cfg.Context.Raw, create.GRPCRequest())
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.GRPCCreateCourseResponse(response, create)
+	}))
+}
