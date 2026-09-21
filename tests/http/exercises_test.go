@@ -28,3 +28,23 @@ func (s *suite) TestCreateExercise() {
 		tools.Assertion.HTTPCreateExerciseResponse(response.Data, create)
 	}))
 }
+
+func (s *suite) TestGetExercise() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("HTTP-EXERCISES-002"),
+		axiom.WithCaseName("get exercise"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		exercise := tools.Exercise()
+		response, err := tools.ExercisesClient().Get(cfg.Context.Raw, exercise.Response.Data.Exercise.Id)
+
+		tools.Assertion.HTTPOK(response.StatusCode, err)
+		tools.Assertion.HTTPGetExerciseResponse(response.Data, exercise.Response.Data)
+	}))
+}

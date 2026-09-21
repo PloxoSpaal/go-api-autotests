@@ -110,5 +110,11 @@ func TestSuite(t *testing.T) {
 		axiom.WithSuiteTestRunner(exercisesRunner),
 	)
 
+	testSuite.Test(
+		"TestGetExercise",
+		(*suite).TestGetExercise,
+		axiom.WithSuiteTestRunner(exercisesRunner),
+	)
+
 	testSuite.Run()
 }

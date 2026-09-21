@@ -50,6 +50,10 @@ func (t *suiteTools) File() httpfixtures.FileFixture {
 
 func (t *suiteTools) Course() httpfixtures.CourseFixture { return httpfixtures.GetCourseFixture(t.cfg) }
 
+func (t *suiteTools) Exercise() httpfixtures.ExerciseFixture {
+	return httpfixtures.GetExerciseFixture(t.cfg)
+}
+
 func (t *suiteTools) FilesClient() *httpclients.FilesClient {
 	return httpfixtures.GetFilesClientFixture(t.cfg)
 }
