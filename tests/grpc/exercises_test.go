@@ -120,3 +120,28 @@ func (s *suite) TestListExercises() {
 		tools.Assertion.GRPCListExercisesResponse(response, exercise.Response)
 	}))
 }
+
+func (s *suite) TestCreateExerciseWithInvalidScores() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-EXERCISES-006"),
+		axiom.WithCaseName("create exercise with invalid scores"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagNegative),
+			axiom.WithMetaStory(metadata.StoryValidateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		course := tools.Course()
+		request := tools.Builder.ExerciseCreate(
+			builders.WithExerciseCreateMaxScore(10),
+			builders.WithExerciseCreateMinScore(100),
+			builders.WithExerciseCreateCourseId(course.Response.GetCourse().GetId()),
+		)
+		response, err := tools.ExercisesClient().Create(cfg.Context.Raw, request.GRPCRequest())
+
+		tools.Assertion.GRPCError(err, codes.InvalidArgument, "max score should not be less than min score")
+		tools.Assertion.Nil(response, "create exercise invalid argument response")
+	}))
+}
