@@ -68,3 +68,12 @@ var coursesRunner = suiteRunner.Join(
 		),
 	),
 )
+
+var exercisesRunner = suiteRunner.Join(
+	axiom.NewRunner(
+		axiom.WithRunnerMeta(
+			axiom.WithMetaTag(metadata.TagExercises),
+			axiom.WithMetaFeature(metadata.FeatureExercises),
+		),
+	),
+)
