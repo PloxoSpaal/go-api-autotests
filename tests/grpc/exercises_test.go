@@ -145,3 +145,24 @@ func (s *suite) TestCreateExerciseWithInvalidScores() {
 		tools.Assertion.Nil(response, "create exercise invalid argument response")
 	}))
 }
+
+func (s *suite) TestGetExerciseWithUnknownID() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-EXERCISES-007"),
+		axiom.WithCaseName("get exercise with unknown id"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagNegative),
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		exerciseId := tools.Fake.UUID()
+		request := &v1.GetExerciseRequest{Id: exerciseId}
+		response, err := tools.ExercisesClient().Get(cfg.Context.Raw, request)
+
+		tools.Assertion.GRPCError(err, codes.NotFound, "Exercise not found")
+		tools.Assertion.Nil(response, "get exercise not found response")
+	}))
+}
