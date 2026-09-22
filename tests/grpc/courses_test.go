@@ -103,3 +103,24 @@ func (s *suite) TestUpdateCourseWithEmptyDescription() {
 		tools.Assertion.Nil(response, "update course with empty description response")
 	}))
 }
+
+func (s *suite) TestGetCourse() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-COURSES-005"),
+		axiom.WithCaseName("get course"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryGetEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		course := tools.Course()
+		request := &v1.GetCourseRequest{Id: course.Response.GetCourse().GetId()}
+		response, err := tools.CoursesClient().Get(cfg.Context.Raw, request)
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.GRPCGetCourseResponse(response, course.Response)
+	}))
+}
