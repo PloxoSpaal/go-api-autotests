@@ -124,3 +124,28 @@ func (s *suite) TestGetCourse() {
 		tools.Assertion.GRPCGetCourseResponse(response, course.Response)
 	}))
 }
+
+func (s *suite) TestDeleteCourse() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-COURSES-006"),
+		axiom.WithCaseName("delete course"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryDeleteEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		course := tools.Course()
+		deleteRequest := &v1.DeleteCourseRequest{Id: course.Response.GetCourse().GetId()}
+		deleteResponse, err := tools.CoursesClient().Delete(cfg.Context.Raw, deleteRequest)
+
+		tools.Assertion.NotNil(deleteResponse, "delete course response")
+
+		getRequest := &v1.GetCourseRequest{Id: course.Response.GetCourse().GetId()}
+		getResponse, err := tools.CoursesClient().Get(cfg.Context.Raw, getRequest)
+
+		tools.Assertion.GRPCError(err, codes.NotFound, "Course not found")
+		tools.Assertion.Nil(getResponse, "get course not found response")
+	}))
+}
