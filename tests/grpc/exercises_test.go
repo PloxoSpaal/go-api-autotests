@@ -50,3 +50,25 @@ func (s *suite) TestGetExercise() {
 		tools.Assertion.GRPCGetExerciseResponse(response, exercise.Response)
 	}))
 }
+
+func (s *suite) TestUpdateExercise() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-EXERCISES-003"),
+		axiom.WithCaseName("update exercise"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryUpdateEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		exercise := tools.Exercise()
+		request := tools.Builder.ExerciseUpdate()
+		response, err := tools.ExercisesClient().Update(
+			cfg.Context.Raw, request.GRPCRequest(exercise.Response.GetExercise().GetId()),
+		)
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.GRPCUpdateExerciseResponse(response, request)
+	}))
+}
