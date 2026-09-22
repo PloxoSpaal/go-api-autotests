@@ -5,6 +5,7 @@ import (
 	"github.com/Nikita-Filonov/axiom"
 	"github.com/PloxoSpaal/go-api-autotests/builders"
 	"github.com/PloxoSpaal/go-api-autotests/metadata"
+	"google.golang.org/grpc/codes"
 )
 
 func (s *suite) TestCreateExercise() {
@@ -70,5 +71,31 @@ func (s *suite) TestUpdateExercise() {
 
 		tools.Assertion.NoError(err)
 		tools.Assertion.GRPCUpdateExerciseResponse(response, request)
+	}))
+}
+
+func (s *suite) TestDeleteExercise() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-EXERCISES-004"),
+		axiom.WithCaseName("delete exercise"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaStory(metadata.StoryDeleteEntity),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		exercise := tools.Exercise()
+		deleteRequest := &v1.DeleteExerciseRequest{Id: exercise.Response.GetExercise().GetId()}
+		deleteResponse, deleteErr := tools.ExercisesClient().Delete(cfg.Context.Raw, deleteRequest)
+
+		tools.Assertion.NoError(deleteErr)
+		tools.Assertion.NotNil(deleteResponse, "delete exercise response")
+
+		getRequest := &v1.GetExerciseRequest{Id: exercise.Response.GetExercise().GetId()}
+		getResponse, getErr := tools.ExercisesClient().Get(cfg.Context.Raw, getRequest)
+
+		tools.Assertion.GRPCError(getErr, codes.NotFound, "Exercise not found")
+		tools.Assertion.Nil(getResponse, "get exercise not found response")
 	}))
 }
