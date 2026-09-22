@@ -99,3 +99,24 @@ func (s *suite) TestDeleteExercise() {
 		tools.Assertion.Nil(getResponse, "get exercise not found response")
 	}))
 }
+
+func (s *suite) TestListExercises() {
+	testCase := axiom.NewCase(
+		axiom.WithCaseID("GRPC-EXERCISES-005"),
+		axiom.WithCaseName("list exercises"),
+		axiom.WithCaseMeta(
+			axiom.WithMetaTag(metadata.TagSmoke),
+			axiom.WithMetaStory(metadata.StoryGetEntities),
+			axiom.WithMetaSeverity(axiom.SeverityCritical),
+		),
+	)
+
+	s.RunCase(testCase, suiteToolset.Action(func(cfg *axiom.Config, tools *suiteTools) {
+		exercise := tools.Exercise()
+		request := &v1.ListExercisesRequest{CourseId: exercise.Response.GetExercise().GetCourseId()}
+		response, err := tools.ExercisesClient().List(cfg.Context.Raw, request)
+
+		tools.Assertion.NoError(err)
+		tools.Assertion.GRPCListExercisesResponse(response, exercise.Response)
+	}))
+}
