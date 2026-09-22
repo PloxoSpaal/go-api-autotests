@@ -1,0 +1,91 @@
+name: API Tests
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  tests:
+    name: Run API tests and publish Allure report
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout autotests
+        uses: actions/checkout@v7
+
+      - name: Checkout test server
+        uses: actions/checkout@v7
+        with:
+          repository: Nikita-Filonov/api-go-autotests-server
+          ref: v1.1.0
+          path: test-server
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            test-server/go.sum
+
+      - name: Start test server
+        working-directory: test-server
+        run: |
+          cp .env.example .env
+          go run ./cmd/server &
+
+      - name: Wait for test server
+        run: |
+          for attempt in {1..60}; do
+            if curl --fail --silent http://localhost:8000/healthz > /dev/null; then
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "Test server did not become ready in time"
+          exit 1
+
+      - name: Run API tests
+        run: go test -v -count=1 -p=2 -parallel=3 ./...
+
+      - name: Setup Node.js
+        if: ${{ always() }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Install Allure Report
+        if: ${{ always() }}
+        run: npm install --global allure@3.14.3
+
+      - name: Generate Allure report
+        if: ${{ always() }}
+        run: allure awesome ./allure-results --output ./allure-report
+
+      - name: Configure GitHub Pages
+        if: ${{ always() }}
+        uses: actions/configure-pages@v6
+
+      - name: Upload GitHub Pages artifact
+        if: ${{ always() }}
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./allure-report
+
+      - name: Deploy Allure report
+        id: deployment
+        if: ${{ always() }}
+        uses: actions/deploy-pages@v5
